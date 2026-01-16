@@ -11,6 +11,8 @@
     @endif
 
     {{ __('adminlte::adminlte.verify_check_your_email') }}
+    <br>
+    <br>
     {{ __('adminlte::adminlte.verify_if_not_recieved') }},
 
     <form class="d-inline" method="POST" action="{{ route('verification.resend') }}">

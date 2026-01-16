@@ -51,7 +51,17 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'phone' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ],[
+            'name.required' => 'Пожалуйста, введите имя',
+            'email.required' => 'Пожалуйста, введите адрес электронной почты',
+            'email.email' => 'Пожалуйста, введите корректный адрес электронной почты',
+            'email.unique' => 'Этот адрес электронной почты уже зарегистрирован',
+            'phone.required' => 'Пожалуйста, введите номер телефона',
+            'password.required' => 'Пожалуйста, введите пароль',
+            'password.min' => 'Пароль должен быть не менее 8 символов',
+            'password.confirmed' => 'Пароли не совпадают',
         ]);
     }
 
@@ -66,6 +76,7 @@ class RegisterController extends Controller
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'phone' => $data['phone'],
             'password' => Hash::make($data['password']),
         ]);
     }
