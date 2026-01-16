@@ -50,6 +50,22 @@
         @endif
 
     </div>
+
+    @if (session('success'))
+        @push('js')
+            <script>
+                toastr.success(@json(session('success')));
+            </script>
+        @endpush
+    @endif
+
+    @if (session('error'))
+        @push('js')
+            <script>
+                toastr.error(@json(session('error')));
+            </script>
+        @endpush
+    @endif
 @stop
 
 @section('adminlte_js')
