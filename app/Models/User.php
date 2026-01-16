@@ -20,8 +20,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
-        'password',
         'phone',
+        'password',
     ];
 
     /**
@@ -45,5 +45,17 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function adminlte_profile_url(): string
+    {
+        return url('/profile');
+    }
+
+    public function adminlte_desc(): string
+    {
+        $user = auth()->user();
+
+        return $user->name;
     }
 }
