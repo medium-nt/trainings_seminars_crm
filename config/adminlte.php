@@ -299,13 +299,30 @@ return [
     */
 
     'menu' => [
-        // Sidebar items:
         [
-            'text' => 'pages',
-            'url' => 'admin/pages',
-            'icon' => 'far fa-fw fa-file',
-            'label' => 4,
-            'label_color' => 'success',
+            'text' => 'Дашборд',
+            'url' => 'home',
+            'icon' => 'fas fa-fw fa-home',
+        ],
+        [
+            'text' => 'settings',
+            'icon' => 'fas fa-fw fa-cog',
+//            'can' => 'is-storekeeper-or-admin',
+            'submenu' => [
+                [
+                    'text' => 'system_settings',
+                    'url' => 'setting',
+                    'icon' => 'fas fa-fw fa-tools',
+//                    'can' => 'is-admin',
+                ],
+                [
+                    'text' => 'users',
+                    'url' => 'users',
+                    'icon' => 'fas fa-fw fa-users',
+//                    'can' => 'is-admin',
+                ],
+
+            ],
         ],
     ],
 

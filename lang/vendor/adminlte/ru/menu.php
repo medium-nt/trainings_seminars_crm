@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     'main_navigation' => 'ГЛАВНОЕ МЕНЮ',
     'blog' => 'Блог',
     'pages' => 'Страницы',
@@ -16,4 +15,7 @@ return [
     'important' => 'Важно',
     'warning' => 'Внимание',
     'information' => 'Информация',
+    'settings' => 'Настройки',
+    'users' => 'Пользователи',
+    'system_settings' => 'Настройки системы',
 ];
