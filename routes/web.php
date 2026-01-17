@@ -17,4 +17,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('', [App\Http\Controllers\UsersController::class, 'profileUpdate'])
             ->name('profile.update');
     });
+
+    Route::prefix('/users')->group(function () {
+        Route::get('', [App\Http\Controllers\UsersController::class, 'index'])
+            ->name('users.index');
+    });
 });
