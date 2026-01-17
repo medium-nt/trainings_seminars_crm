@@ -62,4 +62,44 @@ class UsersController
         ]);
     }
 
+    public function create()
+    {
+        return view('users.create', [
+            'title' => 'Создание пользователя',
+        ]);
+    }
+
+    public function store()
+    {
+        $rules = [
+            'name' => 'required|string|min:2|max:255',
+            'email' => 'required|email|max:255|unique:users',
+            'password' => 'required|confirmed|string|min:6',
+        ];
+
+        $text = [
+            'name.required' => 'Пожалуйста, введите имя',
+            'name.min' => 'Имя должно быть не менее 2 символов',
+            'name.max' => 'Имя должно быть не более 255 символов',
+            'email.required' => 'Пожалуйста, введите адрес электронной почты',
+            'email.email' => 'Пожалуйста, введите корректный адрес электронной почты',
+            'email.max' => 'Адрес электронной почты должен быть не более 255 символов',
+            'email.unique' => 'Пользователь с таким адресом электронной почты уже существует',
+            'password.required' => 'Пожалуйста, введите пароль',
+            'password.min' => 'Пароль должен быть не менее 6 символов',
+            'password.confirmed' => 'Пароли не совпадают',
+        ];
+
+        $validatedData = request()->validate($rules, $text);
+
+        $validatedData['password'] = bcrypt($validatedData['password']);
+
+        if (User::create($validatedData)) {
+            return redirect()
+                ->route('users.index')
+                ->with('success', 'Пользователь успешно создан');
+        }
+
+        return back()->with('error', 'Ошибка создания пользователя');
+    }
 }
