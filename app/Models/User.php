@@ -3,8 +3,10 @@
 namespace App\Models;
 
  use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+ use Illuminate\Database\Eloquent\Casts\Attribute;
+ use Illuminate\Database\Eloquent\Factories\HasFactory;
+ use Illuminate\Database\Eloquent\Relations\BelongsTo;
+ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -22,6 +24,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'phone',
         'password',
+        'role_id',
     ];
 
     /**
@@ -58,4 +61,64 @@ class User extends Authenticatable implements MustVerifyEmail
 
         return $user->name;
     }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public static function clients()
+    {
+        return Role::where('name', 'client')
+            ->first()
+            ->users;
+    }
+
+    public static function managers()
+    {
+        return Role::where('name', 'manager')
+            ->first()
+            ->users;
+    }
+
+    public static function teachers()
+    {
+        return Role::where('name', 'teacher')
+            ->first()
+            ->users;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role?->name === 'admin';
+    }
+
+    public function isClient(): bool
+    {
+        return $this->role?->name === 'client';
+    }
+
+    public function isManager(): bool
+    {
+        return $this->role?->name === 'manager';
+    }
+
+    public function isTeacher(): bool
+    {
+        return $this->role?->name === 'teacher';
+    }
+
+    public function roleName(): Attribute
+    {
+        return Attribute::get(function () {
+            return match ($this->role?->name) {
+                'client' => 'Клиент',
+                'manager' => 'Менеджер',
+                'admin' => 'Админ',
+                'teacher' => 'Преподаватель',
+                default => '---',
+            };
+        });
+    }
+
 }
