@@ -17,8 +17,10 @@
                     <tr>
                         <th style="width: 50px">#</th>
                         <th>Имя</th>
-                        <th>Фамилия</th>
                         <th>Почта</th>
+                        <th>Телефон</th>
+                        <th>Роль</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -26,8 +28,12 @@
                         <tr>
                             <td>{{ $user->id }}</td>
                             <td>{{ $user->name }}</td>
-                            <td>{{ $user->last_name }}</td>
                             <td>{{ $user->email }}</td>
+                            <td>{{ $user->phone }}</td>
+                            <td>{{ $user->role_name }}</td>
+                            <td>
+                                <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary">Редактировать</a>
+                            </td>
                         </tr>
                     @endforeach
                     </tbody>

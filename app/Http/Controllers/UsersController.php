@@ -58,7 +58,7 @@ class UsersController
     {
         return view('users.index', [
             'title' => 'Пользователи',
-            'users' => User::where('id', '!=', auth()->id())->paginate(5),
+            'users' => User::query()->paginate(5),
         ]);
     }
 
@@ -75,6 +75,7 @@ class UsersController
             'name' => 'required|string|min:2|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|confirmed|string|min:6',
+            'role_id' => 'required|in:1,2,4',
         ];
 
         $text = [
@@ -88,6 +89,8 @@ class UsersController
             'password.required' => 'Пожалуйста, введите пароль',
             'password.min' => 'Пароль должен быть не менее 6 символов',
             'password.confirmed' => 'Пароли не совпадают',
+            'role.required' => 'Пожалуйста, выберите роль',
+            'role.in' => 'Выбранная роль не существует',
         ];
 
         $validatedData = request()->validate($rules, $text);
