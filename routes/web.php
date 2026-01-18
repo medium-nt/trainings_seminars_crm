@@ -9,7 +9,8 @@ Route::get('/', function () {
 Auth::routes(['verify' => true]);
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
+        ->name('home');
 
     Route::prefix('/profile')->group(function () {
         Route::get('', [App\Http\Controllers\UsersController::class, 'profile'])

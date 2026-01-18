@@ -307,19 +307,18 @@ return [
         [
             'text' => 'settings',
             'icon' => 'fas fa-fw fa-cog',
-//            'can' => 'is-storekeeper-or-admin',
+            'can' => 'is-admin-or-manager',
             'submenu' => [
                 [
                     'text' => 'system_settings',
                     'url' => 'setting',
                     'icon' => 'fas fa-fw fa-tools',
-//                    'can' => 'is-admin',
+                    'can' => 'is-admin',
                 ],
                 [
                     'text' => 'users',
                     'url' => 'users',
                     'icon' => 'fas fa-fw fa-users',
-//                    'can' => 'is-admin',
                 ],
 
             ],
