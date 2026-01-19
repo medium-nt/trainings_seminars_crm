@@ -22,7 +22,7 @@
         {{-- Name field --}}
         <div class="input-group mb-3">
             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                value="{{ old('name') }}" placeholder="{{ __('adminlte::adminlte.full_name') }}" autofocus>
+                value="{{ old('name') }}" placeholder="{{ __('adminlte::adminlte.name') }}" autofocus>
 
             <div class="input-group-append">
                 <div class="input-group-text">
@@ -31,6 +31,42 @@
             </div>
 
             @error('name')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+
+        {{-- Last name field --}}
+        <div class="input-group mb-3">
+            <input type="text" name="last_name" class="form-control @error('last_name') is-invalid @enderror"
+                value="{{ old('last_name') }}" placeholder="{{ __('adminlte::adminlte.last_name') }}">
+
+            <div class="input-group-append">
+                <div class="input-group-text">
+                    <span class="fas fa-user {{ config('adminlte.classes_auth_icon', '') }}"></span>
+                </div>
+            </div>
+
+            @error('last_name')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+
+        {{-- Patronymic field --}}
+        <div class="input-group mb-3">
+            <input type="text" name="patronymic" class="form-control @error('patronymic') is-invalid @enderror"
+                value="{{ old('patronymic') }}" placeholder="{{ __('adminlte::adminlte.patronymic') }}">
+
+            <div class="input-group-append">
+                <div class="input-group-text">
+                    <span class="fas fa-user {{ config('adminlte.classes_auth_icon', '') }}"></span>
+                </div>
+            </div>
+
+            @error('patronymic')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>

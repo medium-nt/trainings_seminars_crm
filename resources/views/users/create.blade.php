@@ -31,8 +31,16 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="name">ФИО</label>
+                        <label for="last_name">Фамилия</label>
+                        <input type="text" name="last_name" class="form-control" placeholder="Фамилия" value="{{ old('last_name') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Имя</label>
                         <input type="text" name="name" class="form-control" placeholder="Имя" value="{{ old('name') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patronymic">Отчество</label>
+                        <input type="text" name="patronymic" class="form-control" placeholder="Отчество" value="{{ old('patronymic') }}">
                     </div>
                     <div class="form-group">
                         <label for="email">Почта</label>

@@ -13,7 +13,9 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::factory()->create([
-            'name' => 'Админ',
+            'last_name' => 'Админ',
+            'name' => 'Иван',
+            'patronymic' => 'Иванович',
             'email' => '1@1.ru',
             'password' => bcrypt('111111'),
             'role_id' => 3,
@@ -21,7 +23,9 @@ class UserSeeder extends Seeder
         ]);
 
         User::factory()->create([
-            'name' => 'Менеджер',
+            'last_name' => 'Менеджер',
+            'name' => 'Петр',
+            'patronymic' => 'Петрович',
             'email' => '2@2.ru',
             'password' => bcrypt('222222'),
             'role_id' => 2,
@@ -29,7 +33,9 @@ class UserSeeder extends Seeder
         ]);
 
         User::factory()->create([
-            'name' => 'Клиент',
+            'last_name' => 'Клиент',
+            'name' => 'Сидор',
+            'patronymic' => 'Сидорович',
             'email' => '3@3.ru',
             'password' => bcrypt('333333'),
             'role_id' => 1,
@@ -37,7 +43,9 @@ class UserSeeder extends Seeder
         ]);
 
         User::factory()->create([
-            'name' => 'Преподаватель',
+            'last_name' => 'Преподаватель',
+            'name' => 'Семен',
+            'patronymic' => 'Семенович',
             'email' => '4@4.ru',
             'password' => bcrypt('444444'),
             'role_id' => 4,

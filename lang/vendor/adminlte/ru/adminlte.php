@@ -2,7 +2,9 @@
 
 return [
 
-    'full_name' => 'ФИО',
+    'name' => 'Имя',
+    'last_name' => 'Фамилия',
+    'patronymic' => 'Отчество',
     'email' => 'Почта',
     'phone' => 'Телефон',
     'password' => 'Пароль',

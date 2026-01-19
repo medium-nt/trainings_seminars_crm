@@ -19,16 +19,23 @@ class UsersController
     public function profileUpdate(Request $request)
     {
         $rules = [
+            'last_name' => 'required|string|min:2|max:255',
             'name' => 'required|string|min:2|max:255',
+            'patronymic' => 'nullable|string|min:2|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'sometimes|nullable|string|min:8|max:15',
             'password' => 'nullable|confirmed|string|min:6',
         ];
 
         $text = [
+            'last_name.required' => 'Пожалуйста, введите фамилию',
+            'last_name.min' => 'Фамилия должна быть не менее 2 символов',
+            'last_name.max' => 'Фамилия должна быть не более 255 символов',
             'name.required' => 'Пожалуйста, введите имя',
             'name.min' => 'Имя должно быть не менее 2 символов',
             'name.max' => 'Имя должно быть не более 255 символов',
+            'patronymic.min' => 'Отчество должно быть не менее 2 символов',
+            'patronymic.max' => 'Отчество должно быть не более 255 символов',
             'email.required' => 'Пожалуйста, введите адрес электронной почты',
             'email.email' => 'Пожалуйста, введите корректный адрес электронной почты',
             'email.max' => 'Адрес электронной почты должен быть не более 255 символов',
@@ -72,16 +79,23 @@ class UsersController
     public function store()
     {
         $rules = [
+            'last_name' => 'required|string|min:2|max:255',
             'name' => 'required|string|min:2|max:255',
+            'patronymic' => 'nullable|string|min:2|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|confirmed|string|min:6',
             'role_id' => 'required|in:1,2,4',
         ];
 
         $text = [
+            'last_name.required' => 'Пожалуйста, введите фамилию',
+            'last_name.min' => 'Фамилия должна быть не менее 2 символов',
+            'last_name.max' => 'Фамилия должна быть не более 255 символов',
             'name.required' => 'Пожалуйста, введите имя',
             'name.min' => 'Имя должно быть не менее 2 символов',
             'name.max' => 'Имя должно быть не более 255 символов',
+            'patronymic.min' => 'Отчество должно быть не менее 2 символов',
+            'patronymic.max' => 'Отчество должно быть не более 255 символов',
             'email.required' => 'Пожалуйста, введите адрес электронной почты',
             'email.email' => 'Пожалуйста, введите корректный адрес электронной почты',
             'email.max' => 'Адрес электронной почты должен быть не более 255 символов',

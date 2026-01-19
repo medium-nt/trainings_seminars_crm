@@ -50,11 +50,16 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'patronymic' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'phone' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ],[
             'name.required' => 'Пожалуйста, введите имя',
+            'last_name.required' => 'Пожалуйста, введите фамилию',
+            'patronymic.min' => 'Отчество не может быть не менее 2 символов',
+            'patronymic.max' => 'Отчество должно быть не более 255 символов',
             'email.required' => 'Пожалуйста, введите адрес электронной почты',
             'email.email' => 'Пожалуйста, введите корректный адрес электронной почты',
             'email.unique' => 'Этот адрес электронной почты уже зарегистрирован',
@@ -78,6 +83,7 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'phone' => $data['phone'],
             'password' => Hash::make($data['password']),
+            'role_id' => 1
         ]);
     }
 }

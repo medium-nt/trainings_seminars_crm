@@ -24,9 +24,21 @@
                     @csrf
                     <div class="card-body">
                         <div class="form-group">
+                            <label for="last_name">Фамилия</label>
+                            <input type="text" class="form-control" id="last_name" value="{{ $user->last_name }}"
+                                   name="last_name" placeholder="Фамилия" required>
+                        </div>
+
+                        <div class="form-group">
                             <label for="name">Имя</label>
                             <input type="text" class="form-control" id="name" value="{{ $user->name }}"
                                    name="name" placeholder="Имя" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="patronymic">Отчество</label>
+                            <input type="text" class="form-control" id="patronymic" value="{{ $user->patronymic }}"
+                                   name="patronymic" placeholder="Отчество">
                         </div>
 
                         <div class="form-group">
