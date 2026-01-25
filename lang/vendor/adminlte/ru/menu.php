@@ -19,4 +19,5 @@ return [
     'users' => 'Пользователи',
     'system_settings' => 'Настройки системы',
     'courses' => 'Курсы',
+    'groups' => 'Группы',
 ];

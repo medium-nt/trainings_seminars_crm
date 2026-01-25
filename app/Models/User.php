@@ -6,6 +6,7 @@ namespace App\Models;
  use Illuminate\Database\Eloquent\Casts\Attribute;
  use Illuminate\Database\Eloquent\Factories\HasFactory;
  use Illuminate\Database\Eloquent\Relations\BelongsTo;
+ use Illuminate\Database\Eloquent\Relations\HasMany;
  use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -69,6 +70,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(Role::class);
     }
 
+    public function groups(): HasMany
+    {
+        return $this->hasMany(Group::class, 'teacher_id');
+    }
+
     public static function clients()
     {
         return Role::where('name', 'client')
@@ -120,6 +126,13 @@ class User extends Authenticatable implements MustVerifyEmail
                 'teacher' => 'Преподаватель',
                 default => '---',
             };
+        });
+    }
+
+    public function fullName(): Attribute
+    {
+        return Attribute::get(function () {
+            return trim(($this->last_name ?? '') . ' ' . ($this->name ?? '') . ' ' . ($this->patronymic ?? ''));
         });
     }
 

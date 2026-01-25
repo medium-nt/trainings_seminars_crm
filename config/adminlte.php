@@ -305,6 +305,11 @@ return [
             'icon' => 'fas fa-fw fa-home',
         ],
         [
+            'text' => 'groups',
+            'url' => 'groups',
+            'icon' => 'fas fa-fw fa-users',
+        ],
+        [
             'text' => 'settings',
             'icon' => 'fas fa-fw fa-cog',
             'can' => 'is-admin-or-manager',
@@ -325,7 +330,6 @@ return [
                     'url' => 'courses',
                     'icon' => 'fas fa-fw fa-graduation-cap',
                 ],
-
             ],
         ],
     ],
