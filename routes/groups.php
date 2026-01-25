@@ -14,6 +14,9 @@ Route::prefix('/groups')->group(function () {
     Route::post('', [GroupsController::class, 'store'])
         ->can('create', Group::class)
         ->name('groups.store');
+    Route::get('/{group}', [GroupsController::class, 'show'])
+        ->can('view', 'group')
+        ->name('groups.show');
     Route::get('/{group}/edit', [GroupsController::class, 'edit'])
         ->can('update', 'group')
         ->name('groups.edit');

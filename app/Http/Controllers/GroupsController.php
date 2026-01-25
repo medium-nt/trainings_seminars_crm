@@ -39,6 +39,14 @@ class GroupsController extends Controller
         return back()->with('error', 'Ошибка создания группы');
     }
 
+    public function show(Group $group)
+    {
+        return view('groups.show', [
+            'title' => 'Карточка группы',
+            'group' => $group->load('course', 'teacher'),
+        ]);
+    }
+
     public function edit(Group $group)
     {
         return view('groups.edit', [
