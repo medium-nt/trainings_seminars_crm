@@ -20,4 +20,5 @@ return [
     'system_settings' => 'Настройки системы',
     'courses' => 'Курсы',
     'groups' => 'Группы',
+    'schedules' => 'Расписание',
 ];

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Group extends Model
 {
@@ -30,5 +31,10 @@ class Group extends Model
         return $this->belongsToMany(User::class, 'group_user', 'group_id', 'client_id')
             ->withTimestamps()
             ->whereHas('role', fn($q) => $q->where('name', 'client'));
+    }
+
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(Schedule::class);
     }
 }
