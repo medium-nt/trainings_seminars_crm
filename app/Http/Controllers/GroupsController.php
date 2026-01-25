@@ -43,7 +43,7 @@ class GroupsController extends Controller
     {
         return view('groups.show', [
             'title' => 'Карточка группы',
-            'group' => $group->load('course', 'teacher'),
+            'group' => $group->load('course', 'teacher', 'clients'),
         ]);
     }
 

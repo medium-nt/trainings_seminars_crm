@@ -4,8 +4,10 @@ namespace App\Models;
 
  use Illuminate\Contracts\Auth\MustVerifyEmail;
  use Illuminate\Database\Eloquent\Casts\Attribute;
+ use Illuminate\Database\Eloquent\Collection;
  use Illuminate\Database\Eloquent\Factories\HasFactory;
  use Illuminate\Database\Eloquent\Relations\BelongsTo;
+ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  use Illuminate\Database\Eloquent\Relations\HasMany;
  use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -75,6 +77,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Group::class, 'teacher_id');
     }
 
+    public function studentGroups(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class, 'group_user', 'client_id')->withTimestamps();
+    }
+
     public static function clients()
     {
         return Role::where('name', 'client')
@@ -94,6 +101,25 @@ class User extends Authenticatable implements MustVerifyEmail
         return Role::where('name', 'teacher')
             ->first()
             ->users;
+    }
+
+    public static function searchClients(string $search = ''): Collection
+    {
+        $role = Role::where('name', 'client')->first();
+        $query = $role->users()->getQuery();
+
+        if ($search) {
+            $search = mb_strtolower($search);
+            $search = mb_strtoupper(mb_substr($search, 0, 1)) . mb_substr($search, 1);
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('patronymic', 'like', "%$search%");
+            });
+        }
+
+        return $query->limit(50)->get();
     }
 
     public function isAdmin(): bool

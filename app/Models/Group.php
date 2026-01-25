@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Group extends Model
 {
@@ -22,5 +23,12 @@ class Group extends Model
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function clients(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'group_user', 'group_id', 'client_id')
+            ->withTimestamps()
+            ->whereHas('role', fn($q) => $q->where('name', 'client'));
     }
 }
