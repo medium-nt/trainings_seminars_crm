@@ -33,4 +33,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{user}', [App\Http\Controllers\UsersController::class, 'destroy'])
             ->name('users.destroy');
     });
+
+    require base_path('routes/courses.php');
 });

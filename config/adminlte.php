@@ -320,6 +320,11 @@ return [
                     'url' => 'users',
                     'icon' => 'fas fa-fw fa-users',
                 ],
+                [
+                    'text' => 'courses',
+                    'url' => 'courses',
+                    'icon' => 'fas fa-fw fa-graduation-cap',
+                ],
 
             ],
         ],
