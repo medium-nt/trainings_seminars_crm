@@ -61,7 +61,7 @@ class GroupsController extends Controller
     {
         if ($group->update($request->validated())) {
             return redirect()
-                ->route('groups.index')
+                ->route('groups.show', $group->id)
                 ->with('success', 'Группа успешно обновлена');
         }
 
