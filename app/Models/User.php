@@ -109,14 +109,18 @@ class User extends Authenticatable implements MustVerifyEmail
         $query = $role->users()->getQuery();
 
         if ($search) {
-            $search = mb_strtolower($search);
-            $search = mb_strtoupper(mb_substr($search, 0, 1)) . mb_substr($search, 1);
+            $words = array_filter(explode(' ', trim($search)));
 
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                    ->orWhere('last_name', 'like', "%$search%")
-                    ->orWhere('patronymic', 'like', "%$search%");
-            });
+            foreach ($words as $word) {
+                $word = mb_strtolower($word);
+                $word = mb_strtoupper(mb_substr($word, 0, 1)) . mb_substr($word, 1);
+
+                $query->where(function ($q) use ($word) {
+                    $q->where('name', 'like', "%$word%")
+                        ->orWhere('last_name', 'like', "%$word%")
+                        ->orWhere('patronymic', 'like', "%$word%");
+                });
+            }
         }
 
         return $query->limit(50)->get();
