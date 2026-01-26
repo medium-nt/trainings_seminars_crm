@@ -40,7 +40,6 @@
                             <td>{{ $group->status ?? '---' }}</td>
                             <td>
                                 <a href="{{ route('groups.show', $group->id) }}" class="btn btn-info">Просмотр</a>
-                                <a href="{{ route('groups.edit', $group->id) }}" class="btn btn-primary">Редактировать</a>
                                 <form action="{{ route('groups.destroy', $group->id) }}" method="POST" style="display: inline;">
                                     @csrf
                                     @method('DELETE')

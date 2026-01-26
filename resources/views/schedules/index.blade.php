@@ -9,15 +9,14 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
-                <div class="mb-3">
-                    <label for="groupFilter">Фильтр по группе:</label>
+                <div class="mb-3 row">
                     <select id="groupFilter" class="form-control" style="width: 300px;">
                         <option value="">Все группы</option>
                         @foreach($groups as $group)
                             <option value="{{ $group->id }}">{{ $group->title }}</option>
                         @endforeach
                     </select>
-                    <button id="addScheduleBtn" class="btn btn-success ml-2">Добавить занятие</button>
+                    <button id="addScheduleBtn" class="btn btn-success ml-3">Добавить занятие</button>
                 </div>
 
                 <div id='calendar'></div>
@@ -90,6 +89,12 @@
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
+            buttonText: {
+                today: 'Сегодня',
+                month: 'Месяц',
+                week: 'Неделя',
+                day: 'День'
+            },
             locale: 'ru',
             firstDay: 1,
             allDaySlot: false,
@@ -121,6 +126,14 @@
         });
 
         calendar.render();
+
+        // Установка фильтра по группе из URL при загрузке
+        const urlParams = new URLSearchParams(window.location.search);
+        const groupIdFromUrl = urlParams.get('group_id');
+        if (groupIdFromUrl) {
+            groupFilter.value = groupIdFromUrl;
+            calendar.refetchEvents();
+        }
 
         groupFilter.addEventListener('change', function() {
             calendar.refetchEvents();

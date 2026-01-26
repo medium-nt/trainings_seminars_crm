@@ -12,6 +12,7 @@
                 <a href="{{ route('groups.index') }}" class="btn btn-secondary mb-3">Назад</a>
                 <a href="{{ route('groups.edit', $group->id) }}" class="btn btn-primary mb-3">Редактировать</a>
                 <a href="{{ route('groups.clients.create', $group->id) }}" class="btn btn-success mb-3">Добавить слушателей</a>
+                <a href="{{ route('schedules.index', ['group_id' => $group->id]) }}" class="btn btn-info mb-3">Расписание</a>
 
                 <div class="row">
                     <div class="col-md-6">
