@@ -55,6 +55,23 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
+    public function setAttribute($key, $value)
+    {
+        if (in_array($key, ['last_name', 'name', 'patronymic']) && is_string($value)) {
+            $value = $this->capitalizeName($value);
+        }
+
+        return parent::setAttribute($key, $value);
+    }
+
+    private function capitalizeName(string $value): string
+    {
+        $value = trim($value);
+        $value = mb_strtolower($value);
+
+        return mb_strtoupper(mb_substr($value, 0, 1)) . mb_substr($value, 1);
+    }
+
     public function adminlte_profile_url(): string
     {
         return url('/profile');
