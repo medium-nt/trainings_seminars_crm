@@ -51,5 +51,25 @@ class UserSeeder extends Seeder
             'role_id' => 4,
             'phone' => '44444444',
         ]);
+
+        User::factory()->create([
+            'last_name' => 'Клиент',
+            'name' => 'Александр',
+            'patronymic' => 'Александрович',
+            'email' => '5@5.ru',
+            'password' => bcrypt('555555'),
+            'role_id' => 1,
+            'phone' => '55555555',
+        ]);
+
+        User::factory()->create([
+            'last_name' => 'Клиент',
+            'name' => 'Михаил',
+            'patronymic' => 'Михайлович',
+            'email' => '6@6.ru',
+            'password' => bcrypt('666666'),
+            'role_id' => 1,
+            'phone' => '66666666',
+        ]);
     }
 }
