@@ -37,7 +37,7 @@
                                     - {{ $group->end_date->format('d.m.Y') }}
                                 @endif
                             </td>
-                            <td>{{ $group->status ?? '---' }}</td>
+                            <td>{{ $group->statusName ?? '---' }}</td>
                             <td>
                                 <a href="{{ route('groups.show', $group->id) }}" class="btn btn-info">Просмотр</a>
                                 <form action="{{ route('groups.destroy', $group->id) }}" method="POST" style="display: inline;">

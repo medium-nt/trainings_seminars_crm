@@ -308,6 +308,7 @@ return [
             'text' => 'groups',
             'url' => 'groups',
             'icon' => 'fas fa-fw fa-users',
+            'can' => 'is-admin-or-manager',
         ],
 //        [
 //            'text' => 'schedules',

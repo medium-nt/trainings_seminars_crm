@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -36,5 +37,17 @@ class Group extends Model
     public function schedules(): HasMany
     {
         return $this->hasMany(Schedule::class);
+    }
+
+    public function statusName(): Attribute
+    {
+        return Attribute::get(function () {
+            return match ($this->status) {
+                'active' => 'Активный',
+                'in_waiting' => 'В ожидании',
+                'closed' => 'Закрытый',
+                default => '---',
+            };
+        });
     }
 }
