@@ -22,7 +22,7 @@ block "ОБНОВЛЕНИЕ КОДА (git pull)"
 git pull origin main
 
 block "УСТАНОВКА ЗАВИСИМОСТЕЙ (composer)"
-/opt/php/8.4/bin/php composer.phar install --no-interaction --prefer-dist --optimize-autoloader
+/opt/php/8.4/bin/php composer.phar install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
 block "ОЧИСТКА КЕШЕЙ LARAVEL"
 php artisan cache:clear
