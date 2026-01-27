@@ -309,11 +309,11 @@ return [
             'url' => 'groups',
             'icon' => 'fas fa-fw fa-users',
         ],
-        [
-            'text' => 'schedules',
-            'url' => 'schedules',
-            'icon' => 'fas fa-fw fa-calendar',
-        ],
+//        [
+//            'text' => 'schedules',
+//            'url' => 'schedules',
+//            'icon' => 'fas fa-fw fa-calendar',
+//        ],
         [
             'text' => 'settings',
             'icon' => 'fas fa-fw fa-cog',
