@@ -327,9 +327,14 @@ return [
                     'can' => 'is-admin',
                 ],
                 [
-                    'text' => 'users',
-                    'url' => 'users',
-                    'icon' => 'fas fa-fw fa-users',
+                    'text' => 'clients',
+                    'url' => 'users/clients',
+                    'icon' => 'fas fa-fw fa-user-graduate',
+                ],
+                [
+                    'text' => 'employees',
+                    'url' => 'users/employees',
+                    'icon' => 'fas fa-fw fa-user-tie',
                 ],
                 [
                     'text' => 'courses',

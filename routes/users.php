@@ -4,8 +4,10 @@ use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/users')->group(function () {
-    Route::get('', [UsersController::class, 'index'])
-        ->name('users.index');
+    Route::get('/clients', [UsersController::class, 'clients'])
+        ->name('users.clients');
+    Route::get('/employees', [UsersController::class, 'employees'])
+        ->name('users.employees');
     Route::get('/create', [UsersController::class, 'create'])
         ->name('users.create');
     Route::post('/create', [UsersController::class, 'store'])

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
 use App\Models\User;
 use Illuminate\Http\Request;
 
 class UsersController
 {
-
     public function profile()
     {
         return view('users.profile', [
@@ -61,11 +61,26 @@ class UsersController
         return back()->with('error', 'Ошибка сохранения');
     }
 
-    public function index()
+    public function clients()
     {
-        return view('users.index', [
-            'title' => 'Пользователи',
-            'users' => User::query()->paginate(5),
+        $search = request('search') ?? '';
+        $groupId = request('group_id');
+        $users = User::searchClients($search, $groupId)->paginate(5);
+
+        return view('users.clients', [
+            'title' => 'Клиенты',
+            'users' => $users,
+            'groups' => Group::all(),
+        ]);
+    }
+
+    public function employees()
+    {
+        return view('users.employees', [
+            'title' => 'Сотрудники',
+            'users' => User::where('role_id', '!=', 1)
+                ->paginate(5),
+            'groups' => Group::all(),
         ]);
     }
 
@@ -111,9 +126,17 @@ class UsersController
 
         $validatedData['password'] = bcrypt($validatedData['password']);
 
-        if (User::create($validatedData)) {
+        $user = User::create($validatedData);
+
+        if ($user) {
+            if ($user->isClient()) {
+                $route = 'users.clients';
+            } else {
+                $route = 'users.employees';
+            }
+
             return redirect()
-                ->route('users.index')
+                ->route($route)
                 ->with('success', 'Пользователь успешно создан');
         }
 

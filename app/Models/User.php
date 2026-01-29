@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
- use Illuminate\Contracts\Auth\MustVerifyEmail;
- use Illuminate\Database\Eloquent\Casts\Attribute;
- use Illuminate\Database\Eloquent\Collection;
- use Illuminate\Database\Eloquent\Factories\HasFactory;
- use Illuminate\Database\Eloquent\Relations\BelongsTo;
- use Illuminate\Database\Eloquent\Relations\BelongsToMany;
- use Illuminate\Database\Eloquent\Relations\HasMany;
- use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -69,7 +69,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $value = trim($value);
         $value = mb_strtolower($value);
 
-        return mb_strtoupper(mb_substr($value, 0, 1)) . mb_substr($value, 1);
+        return mb_strtoupper(mb_substr($value, 0, 1)).mb_substr($value, 1);
     }
 
     public function adminlte_profile_url(): string
@@ -120,7 +120,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ->users;
     }
 
-    public static function searchClients(string $search = ''): Collection
+    public static function searchClients(string $search = '', ?int $groupId = null): Builder
     {
         $role = Role::where('name', 'client')->first();
         $query = $role->users()->getQuery();
@@ -130,17 +130,25 @@ class User extends Authenticatable implements MustVerifyEmail
 
             foreach ($words as $word) {
                 $word = mb_strtolower($word);
-                $word = mb_strtoupper(mb_substr($word, 0, 1)) . mb_substr($word, 1);
+                $word = mb_strtoupper(mb_substr($word, 0, 1)).mb_substr($word, 1);
 
                 $query->where(function ($q) use ($word) {
                     $q->where('name', 'like', "%$word%")
                         ->orWhere('last_name', 'like', "%$word%")
-                        ->orWhere('patronymic', 'like', "%$word%");
+                        ->orWhere('patronymic', 'like', "%$word%")
+                        ->orWhere('email', 'like', "%$word%")
+                        ->orWhere('phone', 'like', "%$word%");
                 });
             }
         }
 
-        return $query->limit(50)->get();
+        if ($groupId) {
+            $query->whereHas('studentGroups', function ($q) use ($groupId) {
+                $q->where('groups.id', $groupId);
+            });
+        }
+
+        return $query->limit(50);
     }
 
     public function isAdmin(): bool
@@ -179,8 +187,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function fullName(): Attribute
     {
         return Attribute::get(function () {
-            return trim(($this->last_name ?? '') . ' ' . ($this->name ?? '') . ' ' . ($this->patronymic ?? ''));
+            return trim(($this->last_name ?? '').' '.($this->name ?? '').' '.($this->patronymic ?? ''));
         });
     }
-
 }

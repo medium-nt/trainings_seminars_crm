@@ -11,7 +11,7 @@ class ClientsController extends Controller
     {
         $search = $request->get('search', '');
 
-        $clients = User::searchClients($search);
+        $clients = User::searchClients($search)->get();
 
         $results = $clients->map(function ($client) {
             return [
