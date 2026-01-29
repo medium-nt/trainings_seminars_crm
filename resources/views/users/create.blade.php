@@ -21,15 +21,19 @@
             <div class="card-body">
                 <form action="{{ route('users.store') }}" method="POST">
                     @csrf
-                    <div class="form-group">
-                        <label for="role_id">Роль</label>
-                        <select name="role_id" class="form-control" required>
-                            <option value="" selected disabled>---</option>
-                            <option value="1" @selected(old('role_id') == 1)>Клиент</option>
-                            <option value="2" @selected(old('role_id') == 2)>Менеджер</option>
-                            <option value="4" @selected(old('role_id') == 4)>Преподаватель</option>
-                        </select>
-                    </div>
+                    @if(auth()->user()->isAdmin())
+                        <div class="form-group">
+                            <label for="role_id">Роль</label>
+                            <select name="role_id" class="form-control" required>
+                                <option value="" selected disabled>---</option>
+                                <option value="1" @selected(old('role_id') == 1)>Клиент</option>
+                                <option value="2" @selected(old('role_id') == 2)>Менеджер</option>
+                                <option value="4" @selected(old('role_id') == 4)>Преподаватель</option>
+                            </select>
+                        </div>
+                    @else
+                        <input type="hidden" name="role_id" value="1">
+                    @endif
                     <div class="form-group">
                         <label for="last_name">Фамилия</label>
                         <input type="text" name="last_name" class="form-control" placeholder="Фамилия" value="{{ old('last_name') }}" required>

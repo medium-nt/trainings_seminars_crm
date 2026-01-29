@@ -24,13 +24,16 @@ class UserFormRequest extends FormRequest
         $isUpdate = $this->route('user') !== null;
         $isProfile = $this->route()->getName() === 'profile.update';
 
+        // Определяем доступные роли для создания
+        $availableRoles = auth()->user()->isAdmin() ? '1,2,4' : '1';
+
         $rules = [
             'last_name' => 'required|string|min:2|max:255',
             'name' => 'required|string|min:2|max:255',
             'patronymic' => 'nullable|string|min:2|max:255',
             'email' => 'required|email|max:255|unique:users',
             'phone' => 'nullable|string|min:8|max:15',
-            'role_id' => 'required|in:1,2,4',
+            'role_id' => 'required|in:'.$availableRoles,
         ];
 
         if ($isProfile) {

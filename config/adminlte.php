@@ -335,6 +335,7 @@ return [
                     'text' => 'employees',
                     'url' => 'users/employees',
                     'icon' => 'fas fa-fw fa-user-tie',
+                    'can' => 'is-admin',
                 ],
                 [
                     'text' => 'courses',

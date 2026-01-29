@@ -7,6 +7,7 @@ Route::prefix('/users')->group(function () {
     Route::get('/clients', [UsersController::class, 'clients'])
         ->name('users.clients');
     Route::get('/employees', [UsersController::class, 'employees'])
+        ->can('is-admin')
         ->name('users.employees');
     Route::get('/create', [UsersController::class, 'create'])
         ->name('users.create');
