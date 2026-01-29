@@ -96,4 +96,23 @@ class UsersController
             ->route($user->isClient() ? 'users.clients' : 'users.employees')
             ->with('success', 'Пользователь успешно обновлён');
     }
+
+    public function destroy(User $user)
+    {
+        if ($user->isClient() && $user->studentGroups()->count() > 0) {
+            return back()
+                ->with('error', 'Нельзя удалить клиента, который является слушателем в одной из групп!');
+        }
+
+        if ($user->isTeacher() && $user->groups()->count() > 0) {
+            return back()
+                ->with('error', 'Нельзя удалить преподавателя, который закреплен за одной из групп!');
+        }
+
+        $user->delete();
+
+        return redirect()
+            ->route($user->isClient() ? 'users.clients' : 'users.employees')
+            ->with('success', 'Пользователь успешно удалён');
+    }
 }

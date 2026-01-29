@@ -58,6 +58,11 @@
                                 <td>{{ $user->role_name }}</td>
                                 <td>
                                     <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary">Редактировать</a>
+                                    <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить пользователя?')">Удалить</button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach
