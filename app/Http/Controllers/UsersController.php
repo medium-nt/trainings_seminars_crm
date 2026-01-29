@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserFormRequest;
 use App\Models\Group;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Services\UserService;
 
 class UsersController
 {
@@ -16,49 +17,18 @@ class UsersController
         ]);
     }
 
-    public function profileUpdate(Request $request)
+    public function profileUpdate(UserFormRequest $request, UserService $userService)
     {
-        $rules = [
-            'last_name' => 'required|string|min:2|max:255',
-            'name' => 'required|string|min:2|max:255',
-            'patronymic' => 'nullable|string|min:2|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'sometimes|nullable|string|min:8|max:15',
-            'password' => 'nullable|confirmed|string|min:6',
-        ];
+        $data = $userService->setPasswordIfNeeded(
+            $request->validated(),
+            $request->input('password')
+        );
 
-        $text = [
-            'last_name.required' => 'Пожалуйста, введите фамилию',
-            'last_name.min' => 'Фамилия должна быть не менее 2 символов',
-            'last_name.max' => 'Фамилия должна быть не более 255 символов',
-            'name.required' => 'Пожалуйста, введите имя',
-            'name.min' => 'Имя должно быть не менее 2 символов',
-            'name.max' => 'Имя должно быть не более 255 символов',
-            'patronymic.min' => 'Отчество должно быть не менее 2 символов',
-            'patronymic.max' => 'Отчество должно быть не более 255 символов',
-            'email.required' => 'Пожалуйста, введите адрес электронной почты',
-            'email.email' => 'Пожалуйста, введите корректный адрес электронной почты',
-            'email.max' => 'Адрес электронной почты должен быть не более 255 символов',
-            'phone.min' => 'Номер телефона должен быть не менее 8 символов',
-            'phone.max' => 'Номер телефона должен быть не более 15 символов',
-            'password.min' => 'Пароль должен быть не менее 6 символов',
-            'password.confirmed' => 'Пароли не совпадают',
-        ];
+        auth()->user()->update($data);
 
-        $validatedData = $request->validate($rules, $text);
-
-        if ($request->filled('password')) {
-            $validatedData['password'] = bcrypt($validatedData['password']);
-        } else {
-            unset($validatedData['password']);
-        }
-
-        $user = auth()->user();
-        if ($user->update($validatedData)) {
-            return redirect()->route('profile')->with('success', 'Изменения сохранены.');
-        }
-
-        return back()->with('error', 'Ошибка сохранения');
+        return redirect()
+            ->route('profile')
+            ->with('success', 'Изменения сохранены.');
     }
 
     public function clients()
@@ -91,55 +61,39 @@ class UsersController
         ]);
     }
 
-    public function store()
+    public function store(UserFormRequest $request, UserService $userService)
     {
-        $rules = [
-            'last_name' => 'required|string|min:2|max:255',
-            'name' => 'required|string|min:2|max:255',
-            'patronymic' => 'nullable|string|min:2|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|confirmed|string|min:6',
-            'role_id' => 'required|in:1,2,4',
-        ];
+        $data = $userService->setPasswordIfNeeded(
+            $request->validated(),
+            $request->input('password')
+        );
 
-        $text = [
-            'last_name.required' => 'Пожалуйста, введите фамилию',
-            'last_name.min' => 'Фамилия должна быть не менее 2 символов',
-            'last_name.max' => 'Фамилия должна быть не более 255 символов',
-            'name.required' => 'Пожалуйста, введите имя',
-            'name.min' => 'Имя должно быть не менее 2 символов',
-            'name.max' => 'Имя должно быть не более 255 символов',
-            'patronymic.min' => 'Отчество должно быть не менее 2 символов',
-            'patronymic.max' => 'Отчество должно быть не более 255 символов',
-            'email.required' => 'Пожалуйста, введите адрес электронной почты',
-            'email.email' => 'Пожалуйста, введите корректный адрес электронной почты',
-            'email.max' => 'Адрес электронной почты должен быть не более 255 символов',
-            'email.unique' => 'Пользователь с таким адресом электронной почты уже существует',
-            'password.required' => 'Пожалуйста, введите пароль',
-            'password.min' => 'Пароль должен быть не менее 6 символов',
-            'password.confirmed' => 'Пароли не совпадают',
-            'role.required' => 'Пожалуйста, выберите роль',
-            'role.in' => 'Выбранная роль не существует',
-        ];
+        $user = User::create($data);
 
-        $validatedData = request()->validate($rules, $text);
+        return redirect()
+            ->route($user->isClient() ? 'users.clients' : 'users.employees')
+            ->with('success', 'Пользователь успешно создан');
+    }
 
-        $validatedData['password'] = bcrypt($validatedData['password']);
+    public function edit(User $user)
+    {
+        return view('users.edit', [
+            'title' => 'Редактирование пользователя',
+            'user' => $user,
+        ]);
+    }
 
-        $user = User::create($validatedData);
+    public function update(UserFormRequest $request, User $user, UserService $userService)
+    {
+        $data = $userService->setPasswordIfNeeded(
+            $request->validated(),
+            $request->input('password')
+        );
 
-        if ($user) {
-            if ($user->isClient()) {
-                $route = 'users.clients';
-            } else {
-                $route = 'users.employees';
-            }
+        $user->update($data);
 
-            return redirect()
-                ->route($route)
-                ->with('success', 'Пользователь успешно создан');
-        }
-
-        return back()->with('error', 'Ошибка создания пользователя');
+        return redirect()
+            ->route($user->isClient() ? 'users.clients' : 'users.employees')
+            ->with('success', 'Пользователь успешно обновлён');
     }
 }
