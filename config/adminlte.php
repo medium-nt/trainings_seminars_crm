@@ -335,6 +335,7 @@ return [
                     'text' => 'courses',
                     'url' => 'courses',
                     'icon' => 'fas fa-fw fa-graduation-cap',
+                    'can' => 'is-admin',
                 ],
             ],
         ],

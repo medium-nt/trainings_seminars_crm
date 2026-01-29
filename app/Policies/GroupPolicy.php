@@ -19,16 +19,16 @@ class GroupPolicy
 
     public function create(User $user): bool
     {
-        return $user->isAdmin() || $user->isManager();
+        return $user->isAdmin();
     }
 
     public function update(User $user, Group $group): bool
     {
-        return $user->isAdmin() || $user->isManager();
+        return $user->isAdmin();
     }
 
     public function delete(User $user, Group $group): bool
     {
-        return $user->isAdmin() || $user->isManager();
+        return $user->isAdmin();
     }
 }

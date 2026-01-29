@@ -10,7 +10,9 @@
         <div class="card">
             <div class="card-body">
 
+                @if(auth()->user()->isAdmin())
                 <a href="{{ route('groups.create') }}" class="btn btn-primary mb-3">Добавить</a>
+                @endif
 
                 <table class="table table-bordered table-striped">
                     <thead class="thead-dark">
@@ -40,11 +42,13 @@
                             <td>{{ $group->statusName ?? '---' }}</td>
                             <td>
                                 <a href="{{ route('groups.show', $group->id) }}" class="btn btn-info">Просмотр</a>
+                                @if(auth()->user()->isAdmin())
                                 <form action="{{ route('groups.destroy', $group->id) }}" method="POST" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить группу?')">Удалить</button>
                                 </form>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
