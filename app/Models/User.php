@@ -32,6 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone',
         'password',
         'role_id',
+        'is_blocked',
     ];
 
     /**
@@ -54,6 +55,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_blocked' => 'boolean',
         ];
     }
 
@@ -171,6 +173,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isTeacher(): bool
     {
         return $this->role?->name === 'teacher';
+    }
+
+    public function isBlocked(): bool
+    {
+        return (bool) $this->is_blocked;
     }
 
     public function roleName(): Attribute

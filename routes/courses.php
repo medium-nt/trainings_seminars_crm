@@ -3,7 +3,7 @@
 use App\Http\Controllers\CoursesController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('/courses')->group(function () {
+Route::middleware(['blocked'])->prefix('/courses')->group(function () {
     Route::get('', [CoursesController::class, 'index'])
         ->can('is-admin')
         ->name('courses.index');

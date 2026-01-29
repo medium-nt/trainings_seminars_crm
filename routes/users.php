@@ -3,7 +3,7 @@
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('/users')->group(function () {
+Route::middleware(['blocked'])->prefix('/users')->group(function () {
     Route::get('/clients', [UsersController::class, 'clients'])
         ->name('users.clients');
     Route::get('/employees', [UsersController::class, 'employees'])
@@ -19,4 +19,9 @@ Route::prefix('/users')->group(function () {
         ->name('users.update');
     Route::delete('/{user}', [UsersController::class, 'destroy'])
         ->name('users.destroy');
+    Route::post('/{user}/toggle-block', [UsersController::class, 'toggleBlock'])
+        ->name('users.toggleBlock');
+
+    Route::get('/search', [UsersController::class, 'search'])
+        ->name('clients.search');
 });

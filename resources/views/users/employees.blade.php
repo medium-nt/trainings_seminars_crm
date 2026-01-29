@@ -37,6 +37,12 @@
                                 <td>{{ $user->role_name }}</td>
                                 <td>
                                     <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary">Редактировать</a>
+                                    <form action="{{ route('users.toggleBlock', $user->id) }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="btn {{ $user->is_blocked ? 'btn-success' : 'btn-warning' }}">
+                                            {{ $user->is_blocked ? 'Разблокировать' : 'Заблокировать' }}
+                                        </button>
+                                    </form>
                                     <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display: inline;">
                                         @csrf
                                         @method('DELETE')

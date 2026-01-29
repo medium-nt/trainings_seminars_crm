@@ -5,7 +5,7 @@ use App\Http\Controllers\GroupsController;
 use App\Models\Group;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('/groups')->group(function () {
+Route::middleware(['blocked'])->prefix('/groups')->group(function () {
     Route::get('', [GroupsController::class, 'index'])
         ->can('viewAny', Group::class)
         ->name('groups.index');

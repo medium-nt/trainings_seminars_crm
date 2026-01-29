@@ -6,6 +6,7 @@ use App\Http\Requests\UserFormRequest;
 use App\Models\Group;
 use App\Models\User;
 use App\Services\UserService;
+use Illuminate\Http\Request;
 
 class UsersController
 {
@@ -114,5 +115,30 @@ class UsersController
         return redirect()
             ->route($user->isClient() ? 'users.clients' : 'users.employees')
             ->with('success', 'Пользователь успешно удалён');
+    }
+
+    public function toggleBlock(User $user)
+    {
+        $user->update(['is_blocked' => ! $user->is_blocked]);
+
+        return back()
+            ->with('success', $user->is_blocked ? 'Пользователь заблокирован' : 'Пользователь разблокирован');
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->get('search', '');
+
+        $clients = User::searchClients($search)->get();
+
+        $results = $clients->map(function ($client) {
+            return [
+                'id' => $client->id,
+                'full_name' => $client->full_name,
+                'email' => $client->email,
+            ];
+        });
+
+        return response()->json($results);
     }
 }
