@@ -12,9 +12,18 @@ class UsersController
 {
     public function profile()
     {
+        $documentTypes = [
+            ['type' => 'passport_main', 'title' => 'Паспорт (основная страница)'],
+            ['type' => 'passport_reg', 'title' => 'Паспорт (прописка)'],
+            ['type' => 'snils', 'title' => 'СНИЛС'],
+            ['type' => 'diploma_basis', 'title' => 'Документ-основание для диплома'],
+        ];
+
         return view('users.profile', [
             'title' => 'Профиль',
             'user' => auth()->user(),
+            'documentTypes' => $documentTypes,
+            'documents' => auth()->user()->documents->keyBy('id'),
         ]);
     }
 
@@ -78,9 +87,18 @@ class UsersController
 
     public function edit(User $user)
     {
+        $documentTypes = [
+            ['type' => 'passport_main', 'title' => 'Паспорт (основная страница)'],
+            ['type' => 'passport_reg', 'title' => 'Паспорт (прописка)'],
+            ['type' => 'snils', 'title' => 'СНИЛС'],
+            ['type' => 'diploma_basis', 'title' => 'Документ-основание для диплома'],
+        ];
+
         return view('users.edit', [
             'title' => 'Редактирование пользователя',
             'user' => $user,
+            'documentTypes' => $documentTypes,
+            'documents' => $user->documents->keyBy('id'),
         ]);
     }
 

@@ -103,6 +103,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Group::class, 'group_user', 'client_id')->withTimestamps();
     }
 
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
+
     public static function clients()
     {
         return Role::where('name', 'client')

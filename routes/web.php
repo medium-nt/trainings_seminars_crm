@@ -19,6 +19,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('profile.update');
     });
 
+    Route::prefix('documents')->name('documents.')->group(function () {
+        Route::post('/', [App\Http\Controllers\DocumentsController::class, 'store'])->name('store');
+        Route::delete('/{document}', [App\Http\Controllers\DocumentsController::class, 'destroy'])->name('destroy');
+        Route::get('/{document}/download', [App\Http\Controllers\DocumentsController::class, 'download'])->name('download');
+        Route::patch('/{document}/approve', [App\Http\Controllers\DocumentsController::class, 'approve'])->name('approve');
+    });
+
     require base_path('routes/users.php');
     require base_path('routes/courses.php');
     require base_path('routes/groups.php');
