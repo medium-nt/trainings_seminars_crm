@@ -310,6 +310,18 @@ return [
             'icon' => 'fas fa-fw fa-users',
             'can' => 'is-admin-or-manager',
         ],
+        [
+            'text' => 'Статистика',
+            'icon' => 'fas fa-fw fa-chart-bar',
+            'can' => 'is-admin-or-manager',
+            'submenu' => [
+                [
+                    'text' => 'Документы',
+                    'url' => 'statistics/check-documents-approval',
+                    'icon' => 'fas fa-fw fa-file-alt',
+                ],
+            ],
+        ],
 //        [
 //            'text' => 'schedules',
 //            'url' => 'schedules',
