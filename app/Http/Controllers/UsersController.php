@@ -13,10 +13,13 @@ class UsersController
     public function profile()
     {
         $documentTypes = [
+            ['type' => 'contract', 'title' => 'Договор'],
+            ['type' => 'personal_data_consent', 'title' => 'Согласие на обработку ПД'],
             ['type' => 'passport_main', 'title' => 'Паспорт (основная страница)'],
             ['type' => 'passport_reg', 'title' => 'Паспорт (прописка)'],
             ['type' => 'snils', 'title' => 'СНИЛС'],
             ['type' => 'diploma_basis', 'title' => 'Документ-основание для диплома'],
+            ['type' => 'name_change_document', 'title' => 'Документ о смене фамилии'],
         ];
 
         return view('users.profile', [
@@ -88,10 +91,13 @@ class UsersController
     public function edit(User $user)
     {
         $documentTypes = [
+            ['type' => 'contract', 'title' => 'Договор'],
+            ['type' => 'personal_data_consent', 'title' => 'Согласие на обработку ПД'],
             ['type' => 'passport_main', 'title' => 'Паспорт (основная страница)'],
             ['type' => 'passport_reg', 'title' => 'Паспорт (прописка)'],
             ['type' => 'snils', 'title' => 'СНИЛС'],
             ['type' => 'diploma_basis', 'title' => 'Документ-основание для диплома'],
+            ['type' => 'name_change_document', 'title' => 'Документ о смене фамилии'],
         ];
 
         return view('users.edit', [

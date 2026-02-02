@@ -40,6 +40,9 @@ class Document extends Model
             'passport_reg' => 'Паспорт (прописка)',
             'snils' => 'СНИЛС',
             'diploma_basis' => 'Документ-основание для диплома',
+            'contract' => 'Договор',
+            'personal_data_consent' => 'Согласие на обработку ПД',
+            'name_change_document' => 'Документ о смене фамилии',
             default => 'Другой',
         };
     }
