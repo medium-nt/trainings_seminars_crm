@@ -20,6 +20,7 @@ class UserSeeder extends Seeder
             'password' => bcrypt('111111'),
             'role_id' => 3,
             'phone' => '11111111',
+            'email_verified_at' => now(),
         ]);
 
         User::create([
@@ -30,6 +31,7 @@ class UserSeeder extends Seeder
             'password' => bcrypt('222222'),
             'role_id' => 2,
             'phone' => '22222222',
+            'email_verified_at' => now(),
         ]);
 
         User::create([
@@ -40,6 +42,7 @@ class UserSeeder extends Seeder
             'password' => bcrypt('333333'),
             'role_id' => 1,
             'phone' => '33333333',
+            'email_verified_at' => now(),
         ]);
 
         User::create([
@@ -50,6 +53,7 @@ class UserSeeder extends Seeder
             'password' => bcrypt('444444'),
             'role_id' => 4,
             'phone' => '44444444',
+            'email_verified_at' => now(),
         ]);
 
         User::create([
@@ -60,6 +64,7 @@ class UserSeeder extends Seeder
             'password' => bcrypt('555555'),
             'role_id' => 1,
             'phone' => '55555555',
+            'email_verified_at' => now(),
         ]);
 
         User::create([
@@ -70,6 +75,7 @@ class UserSeeder extends Seeder
             'password' => bcrypt('666666'),
             'role_id' => 1,
             'phone' => '66666666',
+            'email_verified_at' => now(),
         ]);
     }
 }
