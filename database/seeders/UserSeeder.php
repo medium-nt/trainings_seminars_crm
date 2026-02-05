@@ -12,7 +12,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
+        User::create([
             'last_name' => 'Админ',
             'name' => 'Иван',
             'patronymic' => 'Иванович',
@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
             'phone' => '11111111',
         ]);
 
-        User::factory()->create([
+        User::create([
             'last_name' => 'Менеджер',
             'name' => 'Петр',
             'patronymic' => 'Петрович',
@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
             'phone' => '22222222',
         ]);
 
-        User::factory()->create([
+        User::create([
             'last_name' => 'Клиент',
             'name' => 'Сидор',
             'patronymic' => 'Сидорович',
@@ -42,7 +42,7 @@ class UserSeeder extends Seeder
             'phone' => '33333333',
         ]);
 
-        User::factory()->create([
+        User::create([
             'last_name' => 'Преподаватель',
             'name' => 'Семен',
             'patronymic' => 'Семенович',
@@ -52,7 +52,7 @@ class UserSeeder extends Seeder
             'phone' => '44444444',
         ]);
 
-        User::factory()->create([
+        User::create([
             'last_name' => 'Клиент',
             'name' => 'Александр',
             'patronymic' => 'Александрович',
@@ -62,7 +62,7 @@ class UserSeeder extends Seeder
             'phone' => '55555555',
         ]);
 
-        User::factory()->create([
+        User::create([
             'last_name' => 'Клиент',
             'name' => 'Михаил',
             'patronymic' => 'Михайлович',
