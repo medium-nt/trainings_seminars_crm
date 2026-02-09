@@ -1,10 +1,18 @@
 <?php
 
+use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+if (app()->environment('local')) {
+    Route::prefix('autologin')->group(function () {
+        Route::get('/{email}', [UsersController::class, 'autologin'])
+            ->name('users.autologin');
+    });
+}
 
 Auth::routes(['verify' => true]);
 

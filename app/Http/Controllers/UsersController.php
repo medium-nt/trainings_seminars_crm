@@ -7,6 +7,8 @@ use App\Models\Group;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController
 {
@@ -164,5 +166,21 @@ class UsersController
         });
 
         return response()->json($results);
+    }
+
+    public function autologin(string $email)
+    {
+        if (! App::environment(['local'])) {
+            abort(403, 'Доступ запрещён');
+        }
+
+        $user = User::query()->where('email', $email)->first();
+        if (! $user) {
+            abort(404, 'Пользователь не найден');
+        }
+
+        Auth::login($user);
+
+        return redirect('/home');
     }
 }
