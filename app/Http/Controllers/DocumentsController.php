@@ -14,8 +14,17 @@ class DocumentsController extends Controller
         $request->validate([
             'type' => 'required|string|max:50',
             'files' => 'required|array|min:1',
-            'files.*' => 'required|file|mimes:jpg,jpeg,png,pdf|max:51200',
+            'files.*' => 'required|file|mimes:pdf|max:51200',
             'user_id' => 'nullable|exists:users,id',
+        ], [
+            'type.required' => 'Пожалуйста, укажите тип документа',
+            'type.max' => 'Тип документа должен быть не более 50 символов',
+            'files.required' => 'Пожалуйста, выберите хотя бы один файл',
+            'files.*.required' => 'Пожалуйста, выберите хотя бы один файл',
+            'files.*.file' => 'Пожалуйста, выберите файл',
+            'files.*.mimes' => 'Допустимые форматы файлов: pdf',
+            'files.*.max' => 'Размер файла не должен превышать 50 МБ',
+            'user_id.exists' => 'Неизвестный пользователь',
         ]);
 
         // Определяем пользователя для которого загружаем документы

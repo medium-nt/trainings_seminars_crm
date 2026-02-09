@@ -98,7 +98,7 @@
                                 <div class="row g-2">
                                     <div class="col-12 col-sm">
                                         <input type="file" name="files[]" class="form-control"
-                                               accept=".jpg,.jpeg,.png,.pdf" multiple required>
+                                               accept=".pdf" multiple required>
                                     </div>
                                     <div class="col-12 col-sm-auto">
                                         <button type="submit" class="btn btn-primary w-100">Загрузить</button>
