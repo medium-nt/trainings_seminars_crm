@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Group extends Model
 {
-    protected $fillable = ['title', 'course_id', 'teacher_id', 'start_date', 'end_date', 'note', 'status'];
+    protected $fillable = ['title', 'course_id', 'teacher_id', 'start_date', 'end_date', 'note', 'status', 'price'];
 
     protected $casts = [
         'start_date' => 'date',
@@ -31,7 +31,7 @@ class Group extends Model
     {
         return $this->belongsToMany(User::class, 'group_user', 'group_id', 'client_id')
             ->withTimestamps()
-            ->whereHas('role', fn($q) => $q->where('name', 'client'));
+            ->whereHas('role', fn ($q) => $q->where('name', 'client'));
     }
 
     public function schedules(): HasMany

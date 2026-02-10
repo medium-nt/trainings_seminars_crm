@@ -35,6 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     require base_path('routes/users.php');
+    require base_path('routes/payments.php');
     require base_path('routes/courses.php');
     require base_path('routes/groups.php');
     require base_path('routes/schedules.php');

@@ -311,6 +311,12 @@ return [
             'can' => 'is-admin-or-manager',
         ],
         [
+            'text' => 'Платежи',
+            'url' => 'payments',
+            'icon' => 'fas fa-fw fa-money-bill-wave',
+            'can' => 'is-admin-or-manager',
+        ],
+        [
             'text' => 'Статистика',
             'icon' => 'fas fa-fw fa-chart-bar',
             'can' => 'is-admin-or-manager',
@@ -322,11 +328,11 @@ return [
                 ],
             ],
         ],
-//        [
-//            'text' => 'schedules',
-//            'url' => 'schedules',
-//            'icon' => 'fas fa-fw fa-calendar',
-//        ],
+        //        [
+        //            'text' => 'schedules',
+        //            'url' => 'schedules',
+        //            'icon' => 'fas fa-fw fa-calendar',
+        //        ],
         [
             'text' => 'settings',
             'icon' => 'fas fa-fw fa-cog',
