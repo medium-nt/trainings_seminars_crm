@@ -19,10 +19,6 @@ class StatisticsController extends Controller
 
     public function documents(Request $request)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->isManager()) {
-            abort(403);
-        }
-
         $groupId = $request->get('group_id');
         $showOnlyPending = $request->get('show_only_pending') === '1';
 
@@ -82,10 +78,6 @@ class StatisticsController extends Controller
 
     public function payments(Request $request)
     {
-        if (! auth()->user()->isAdmin() && ! auth()->user()->isManager()) {
-            abort(403);
-        }
-
         $groupId = $request->get('group_id');
         $paymentStatus = $request->get('payment_status');
 
