@@ -39,6 +39,11 @@ class Group extends Model
         return $this->hasMany(Schedule::class);
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function statusName(): Attribute
     {
         return Attribute::get(function () {

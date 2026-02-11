@@ -77,6 +77,40 @@
                     </div>
                 </form>
             </div>
+
+            <!-- Блок оплаты (только для клиентов с группами) -->
+            @if(auth()->user()->isClient() && $groups->count() > 0)
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Оплата</h3>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="thead-dark">
+                            <tr>
+                                <th>Группа</th>
+                                <th>Стоимость</th>
+                                <th>Оплачено</th>
+                                <th>Остаток</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($groups as $group)
+                                <tr>
+                                    <td>{{ $group['title'] }}</td>
+                                    <td>{{ number_format($group['price'], 2, '.', ' ') }} ₽</td>
+                                    <td>{{ number_format($group['paid'], 2, '.', ' ') }} ₽</td>
+                                    <td class="{{ $group['remaining'] > 0 ? 'text-danger' : 'text-success' }}">
+                                        {{ number_format($group['remaining'], 2, '.', ' ') }} ₽
+                                    </td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+
         </div>
 
         <!-- Блок документов (только для клиентов) -->

@@ -108,6 +108,17 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Document::class);
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function studentGroupsWithPayments(): BelongsToMany
+    {
+        return $this->studentGroups()
+            ->withCasts(['price' => 'decimal:2']);
+    }
+
     public static function clients()
     {
         return Role::where('name', 'client')

@@ -24,11 +24,27 @@ class UsersController
             ['type' => 'name_change_document', 'title' => 'Документ о смене фамилии'],
         ];
 
+        $groups = auth()->user()->studentGroupsWithPayments->map(function ($group) {
+            $paid = $group->payments()
+                ->where('user_id', auth()->id())
+                ->where('group_id', $group->id)
+                ->sum('amount');
+
+            return [
+                'id' => $group->id,
+                'title' => $group->title,
+                'price' => $group->price,
+                'paid' => $paid,
+                'remaining' => max(0, $group->price - $paid),
+            ];
+        });
+
         return view('users.profile', [
             'title' => 'Профиль',
             'user' => auth()->user(),
             'documentTypes' => $documentTypes,
             'documents' => auth()->user()->documents->keyBy('id'),
+            'groups' => $groups,
         ]);
     }
 
