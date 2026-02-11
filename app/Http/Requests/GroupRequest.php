@@ -21,6 +21,7 @@ class GroupRequest extends FormRequest
             'end_date' => 'nullable|date|after:start_date',
             'note' => 'nullable|string|max:1000',
             'status' => 'nullable|string|max:50',
+            'price' => 'nullable|numeric|min:0|max:99999999.99',
         ];
     }
 
@@ -37,6 +38,9 @@ class GroupRequest extends FormRequest
             'end_date.after' => 'Дата окончания должна быть позже даты начала',
             'note.max' => 'Заметка должна быть не более 1000 символов',
             'status.max' => 'Статус должен быть не более 50 символов',
+            'price.numeric' => 'Стоимость должна быть числом',
+            'price.min' => 'Стоимость не может быть отрицательной',
+            'price.max' => 'Слишком большое значение стоимости',
         ];
     }
 }

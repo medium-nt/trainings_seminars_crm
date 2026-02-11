@@ -35,6 +35,12 @@
         </div>
 
         <div class="form-group">
+            <label for="price">Стоимость</label>
+            <input type="number" name="price" class="form-control" placeholder="0.00" step="0.01" min="0"
+                   value="{{ old('price', $group['price'] ?? '') }}">
+        </div>
+
+        <div class="form-group">
             <label for="teacher_id">Преподаватель</label>
             <select name="teacher_id" class="form-control">
                 <option value="" @selected(old('teacher_id', $group['teacher_id'] ?? '') === '')>---</option>

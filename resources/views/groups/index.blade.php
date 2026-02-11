@@ -20,6 +20,7 @@
                         <th style="width: 50px">#</th>
                         <th>Название</th>
                         <th>Курс</th>
+                        <th>Стоимость</th>
                         <th>Преподаватель</th>
                         <th>Даты</th>
                         <th>Статус</th>
@@ -32,6 +33,7 @@
                             <td>{{ $group->id }}</td>
                             <td>{{ $group->title }}</td>
                             <td>{{ $group->course?->title ?? '---' }}</td>
+                            <td>{{ number_format($group->price, 2, '.', ' ') }} ₽</td>
                             <td>{{ $group->teacher?->full_name ?? '---' }}</td>
                             <td>
                                 {{ $group->start_date?->format('d.m.Y') ?? '---' }}

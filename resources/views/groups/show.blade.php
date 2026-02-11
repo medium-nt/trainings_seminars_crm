@@ -29,6 +29,10 @@
                                 <td>{{ $group->course?->title ?? '---' }}</td>
                             </tr>
                             <tr>
+                                <th>Стоимость</th>
+                                <td>{{ number_format($group->price, 2, '.', ' ') }} ₽</td>
+                            </tr>
+                            <tr>
                                 <th>Преподаватель</th>
                                 <td>{{ $group->teacher?->full_name ?? '---' }}</td>
                             </tr>
