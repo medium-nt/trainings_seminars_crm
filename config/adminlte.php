@@ -326,6 +326,11 @@ return [
                     'url' => 'statistics/check-documents-approval',
                     'icon' => 'fas fa-fw fa-file-alt',
                 ],
+                [
+                    'text' => 'Оплата',
+                    'url' => 'statistics/check-payments',
+                    'icon' => 'fas fa-fw fa-money-bill-wave',
+                ],
             ],
         ],
         //        [

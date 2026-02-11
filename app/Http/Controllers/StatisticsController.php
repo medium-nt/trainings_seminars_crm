@@ -80,7 +80,68 @@ class StatisticsController extends Controller
         ]);
     }
 
-    // Место для будущих методов статистики
-    // public function courses() { ... }
-    // public function groups() { ... }
+    public function payments(Request $request)
+    {
+        if (! auth()->user()->isAdmin() && ! auth()->user()->isManager()) {
+            abort(403);
+        }
+
+        $groupId = $request->get('group_id');
+        $paymentStatus = $request->get('payment_status');
+
+        $query = User::where('role_id', 1)
+            ->with(['studentGroups', 'payments']);
+
+        if ($groupId) {
+            $query->whereHas('studentGroups', function ($q) use ($groupId) {
+                $q->where('group_id', $groupId);
+            });
+        }
+
+        $clients = $query->get();
+
+        $statistics = [];
+
+        foreach ($clients as $client) {
+            foreach ($client->studentGroups as $group) {
+                if ($groupId && $group->id != $groupId) {
+                    continue;
+                }
+
+                $paid = $client->payments()
+                    ->where('group_id', $group->id)
+                    ->sum('amount');
+
+                $remaining = max(0, $group->price - $paid);
+                $isFullyPaid = $remaining == 0;
+
+                $statistics[] = [
+                    'client_id' => $client->id,
+                    'client_name' => $client->full_name,
+                    'group_id' => $group->id,
+                    'group_title' => $group->title,
+                    'price' => $group->price,
+                    'paid' => $paid,
+                    'remaining' => $remaining,
+                    'is_fully_paid' => $isFullyPaid,
+                ];
+            }
+        }
+
+        if ($paymentStatus === 'paid') {
+            $statistics = collect($statistics)->filter(fn ($row) => $row['is_fully_paid']);
+        } elseif ($paymentStatus === 'unpaid') {
+            $statistics = collect($statistics)->filter(fn ($row) => ! $row['is_fully_paid']);
+        } else {
+            $statistics = collect($statistics);
+        }
+
+        return view('statistics.payments', [
+            'title' => 'Статистика оплат',
+            'statistics' => $statistics,
+            'groups' => \App\Models\Group::all(),
+            'selectedGroup' => $groupId,
+            'paymentStatus' => $paymentStatus ?: 'all',
+        ]);
+    }
 }
