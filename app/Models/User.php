@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -33,6 +34,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'role_id',
         'is_blocked',
+        'payer_type',
+        'company_card_path',
+        'company_card_name',
     ];
 
     /**
@@ -56,6 +60,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_blocked' => 'boolean',
+            'payer_type' => 'string',
         ];
     }
 
@@ -213,6 +218,37 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return Attribute::get(function () {
             return trim(($this->last_name ?? '').' '.($this->name ?? '').' '.($this->patronymic ?? ''));
+        });
+    }
+
+    public function isPayerSelf(): bool
+    {
+        return $this->payer_type === 'self';
+    }
+
+    public function isPayerCompany(): bool
+    {
+        return $this->payer_type === 'company';
+    }
+
+    public function hasCompanyCard(): bool
+    {
+        return $this->company_card_path !== null
+            && $this->company_card_name !== null
+            && Storage::disk('public')->exists($this->company_card_path);
+    }
+
+    public function companyCardUrl(): string
+    {
+        return Storage::url($this->company_card_path);
+    }
+
+    protected static function booted(): void
+    {
+        static::deleted(function (User $user) {
+            if ($user->company_card_path) {
+                Storage::delete($user->company_card_path);
+            }
         });
     }
 }

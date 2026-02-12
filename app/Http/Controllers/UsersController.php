@@ -9,6 +9,7 @@ use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class UsersController
 {
@@ -55,11 +56,39 @@ class UsersController
             $request->input('password')
         );
 
-        auth()->user()->update($data);
+        $user = auth()->user();
+
+        $data = $userService->handlePayerTypeChange($data, $user);
+        $data = $userService->handleCompanyCardUpload(
+            array_merge($data, ['company_card' => $request->file('company_card')]),
+            $user
+        );
+
+        $user->update($data);
 
         return redirect()
             ->route('profile')
             ->with('success', 'Изменения сохранены.');
+    }
+
+    public function deleteCompanyCard()
+    {
+        $user = auth()->user();
+
+        if ($user->company_card_path) {
+            Storage::delete($user->company_card_path);
+        }
+
+        $user->update([
+            'company_card_path' => null,
+            'company_card_name' => null,
+        ]);
+
+        if (request()->expectsJson()) {
+            return response()->json(['redirect' => route('profile')]);
+        }
+
+        return back()->with('success', 'Карточка компании удалена.');
     }
 
     public function clients()
@@ -133,10 +162,16 @@ class UsersController
             $request->input('password')
         );
 
+        $data = $userService->handlePayerTypeChange($data, $user);
+        $data = $userService->handleCompanyCardUpload(
+            array_merge($data, ['company_card' => $request->file('company_card')]),
+            $user
+        );
+
         $user->update($data);
 
         return redirect()
-            ->route($user->isClient() ? 'users.clients' : 'users.employees')
+            ->route('users.edit', $user->id)
             ->with('success', 'Пользователь успешно обновлён');
     }
 

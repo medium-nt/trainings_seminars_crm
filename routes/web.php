@@ -25,6 +25,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('profile');
         Route::put('', [App\Http\Controllers\UsersController::class, 'profileUpdate'])
             ->name('profile.update');
+        Route::delete('/company-card', [App\Http\Controllers\UsersController::class, 'deleteCompanyCard'])
+            ->name('profile.company-card.delete');
     });
 
     Route::prefix('documents')->name('documents.')->group(function () {

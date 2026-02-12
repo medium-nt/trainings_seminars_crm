@@ -34,18 +34,36 @@ class UserFormRequest extends FormRequest
             'email' => 'required|email|max:255|unique:users',
             'phone' => 'nullable|string|min:8|max:15',
             'role_id' => 'required|in:'.$availableRoles,
+            'payer_type' => 'nullable|in:self,company',
+            'company_card' => 'nullable|file|mimes:pdf|max:51200',
         ];
 
         if ($isProfile) {
-            $rules['email'] = 'required|email|max:255|unique:users,email,'.auth()->id();
+            $user = auth()->user();
+            $rules['email'] = 'required|email|max:255|unique:users,email,'.$user->id;
             $rules['password'] = 'nullable|confirmed|string|min:6';
+
+            // Файл обязателен только если выбрана "Компания" и нет загруженного файла
+            if (! $user->hasCompanyCard()) {
+                $rules['company_card'] = 'required_if:payer_type,company|file|mimes:pdf|max:51200';
+            }
             unset($rules['role_id']);
         } elseif ($isUpdate) {
-            $rules['email'] = 'required|email|max:255|unique:users,email,'.$this->route('user')->id;
+            $user = $this->route('user');
+            $rules['email'] = 'required|email|max:255|unique:users,email,'.$user->id;
             $rules['password'] = 'nullable|confirmed|string|min:6';
+
+            // Файл обязателен только если выбрана "Компания" и нет загруженного файла
+            if (! $user->hasCompanyCard()) {
+                $rules['company_card'] = 'required_if:payer_type,company|file|mimes:pdf|max:51200';
+            }
             unset($rules['role_id']);
         } else {
             $rules['password'] = 'required|confirmed|string|min:6';
+            // При создании нового пользователя payer_type обязателен
+            $rules['payer_type'] = 'required|in:self,company';
+            // При создании нового пользователя файл обязателен если выбрана "Компания"
+            $rules['company_card'] = 'required_if:payer_type,company|file|mimes:pdf|max:51200';
         }
 
         return $rules;
@@ -78,6 +96,11 @@ class UserFormRequest extends FormRequest
             'password.confirmed' => 'Пароли не совпадают',
             'role_id.required' => 'Пожалуйста, выберите роль',
             'role_id.in' => 'Выбранная роль не существует',
+            'payer_type.required' => 'Пожалуйста, выберите, кто платит',
+            'payer_type.in' => 'Некорректное значение плательщика',
+            'company_card.required_if' => 'Пожалуйста, загрузите карточку компании',
+            'company_card.mimes' => 'Карточка компании должна быть в формате PDF',
+            'company_card.max' => 'Размер файла не должен превышать 50 МБ',
         ];
     }
 }

@@ -24,7 +24,7 @@
                 @endif
 
                 <div class="card-body">
-                    <form action="{{ route('users.update', $user->id) }}" method="POST">
+                    <form action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('put')
                         <div class="form-group">
@@ -47,6 +47,46 @@
                             <label for="phone">Телефон</label>
                             <input type="text" name="phone" class="form-control" placeholder="Телефон" value="{{ $user->phone }}">
                         </div>
+
+                        @if($user->isClient())
+                        <!-- Кто платит (только для клиентов) -->
+                        <div class="form-group">
+                            <label>Кто платит</label>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="payer_type" value="self"
+                                           @if(old('payer_type', $user->payer_type) !== 'company') checked @endif>
+                                    Лично
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="payer_type" value="company"
+                                           @if(old('payer_type', $user->payer_type) === 'company') checked @endif>
+                                    Компания
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Загрузка карточки компании (условное) -->
+                        <div class="form-group company-card-block" @if(old('payer_type', $user->payer_type) !== 'company') style="display:none;" @endif>
+                            <label for="company_card">Карточка компании (PDF)</label>
+                            @if($user->hasCompanyCard())
+                                <div class="alert alert-info py-1">
+                                    Загружен: {{ $user->company_card_name }}
+                                    <a href="{{ $user->companyCardUrl() }}" target="_blank" class="btn btn-sm btn-info ml-2">Просмотр</a>
+                                    <button type="button"
+                                            data-url="{{ route('profile.company-card.delete') }}"
+                                            data-token="{{ csrf_token() }}"
+                                            class="btn btn-sm btn-danger ml-2 btn-delete-company-card">
+                                        Удалить
+                                    </button>
+                                </div>
+                            @endif
+                            <input type="file" class="form-control-file" id="company_card" name="company_card" accept=".pdf">
+                        </div>
+                        @endif
+
                         <div class="form-group">
                             <label for="password">Пароль (оставьте пустым, чтобы не менять)</label>
                             <input type="password" name="password" class="form-control" placeholder="Новый пароль">
@@ -138,6 +178,7 @@
         }
     </style>
 
+    <script src="{{ asset('js/client-card.js') }}"></script>
     <script>
         function showImagePreview(imageUrl) {
             document.getElementById('previewImage').src = imageUrl;

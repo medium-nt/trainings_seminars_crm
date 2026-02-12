@@ -8,6 +8,8 @@
 @section('content')
     <div class="row">
         <div class="col-md-6">
+
+            <!-- Блок с личными данными -->
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Личные данные</h3>
@@ -23,7 +25,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('profile.update') }}" method="POST">
+                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                     @method('PUT')
                     @csrf
                     <div class="card-body">
@@ -50,6 +52,46 @@
                             <input type="text" class="form-control" id="phone" value="{{ $user->phone }}"
                                    name="phone" placeholder="Телефон" required>
                         </div>
+
+                        @if(auth()->user()->isClient())
+                        <!-- Кто платит -->
+                        <div class="form-group">
+                            <label>Кто платит</label>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="payer_type" value="self"
+                                           @if(old('payer_type', $user->payer_type) !== 'company') checked @endif>
+                                    Лично
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="payer_type" value="company"
+                                           @if(old('payer_type', $user->payer_type) === 'company') checked @endif>
+                                    Компания
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Загрузка карточки компании (условное) -->
+                        <div class="form-group company-card-block" @if(old('payer_type', $user->payer_type) !== 'company') style="display:none;" @endif>
+                            <label for="company_card">Карточка компании (PDF)</label>
+                            @if($user->hasCompanyCard())
+                                <div class="alert alert-info py-1">
+                                    Загружен: {{ $user->company_card_name }}
+                                    <a href="{{ $user->companyCardUrl() }}" target="_blank" class="btn btn-sm btn-info ml-2">Просмотр</a>
+                                    <button type="button"
+                                            data-url="{{ route('profile.company-card.delete') }}"
+                                            data-token="{{ csrf_token() }}"
+                                            class="btn btn-sm btn-danger ml-2 btn-delete-company-card">
+                                        Удалить
+                                    </button>
+                                </div>
+                            @endif
+                            <input type="file" class="form-control-file" id="company_card" name="company_card"
+                                   accept=".pdf">
+                        </div>
+                        @endif
 
                         <div class="form-group">
                             <label for="email">Email</label>
@@ -186,6 +228,7 @@
         }
     </style>
 
+    <script src="{{ asset('js/client-card.js') }}"></script>
     <script>
         function showImagePreview(imageUrl) {
             document.getElementById('previewImage').src = imageUrl;
