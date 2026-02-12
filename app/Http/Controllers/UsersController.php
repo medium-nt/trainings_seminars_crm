@@ -63,6 +63,10 @@ class UsersController
             array_merge($data, ['company_card' => $request->file('company_card')]),
             $user
         );
+        $data = $userService->handlePostalDocUpload(
+            array_merge($data, ['postal_doc' => $request->file('postal_doc')]),
+            $user
+        );
 
         $user->update($data);
 
@@ -89,6 +93,34 @@ class UsersController
         }
 
         return back()->with('success', 'Карточка компании удалена.');
+    }
+
+    public function deletePostalDoc()
+    {
+        $userId = request('user_id');
+        $currentUser = auth()->user();
+
+        // Определяем пользователя, у которого удаляем документ
+        if ($userId && ($currentUser->isAdmin() || $currentUser->isManager())) {
+            $user = User::findOrFail($userId);
+        } else {
+            $user = $currentUser;
+        }
+
+        if ($user->postal_doc_path) {
+            Storage::disk('public')->delete($user->postal_doc_path);
+        }
+
+        $user->update([
+            'postal_doc_path' => null,
+            'postal_doc_name' => null,
+        ]);
+
+        if (request()->expectsJson()) {
+            return response()->json(['success' => true]);
+        }
+
+        return back()->with('success', 'Документ удалён.');
     }
 
     public function clients()
@@ -165,6 +197,10 @@ class UsersController
         $data = $userService->handlePayerTypeChange($data, $user);
         $data = $userService->handleCompanyCardUpload(
             array_merge($data, ['company_card' => $request->file('company_card')]),
+            $user
+        );
+        $data = $userService->handlePostalDocUpload(
+            array_merge($data, ['postal_doc' => $request->file('postal_doc')]),
             $user
         );
 

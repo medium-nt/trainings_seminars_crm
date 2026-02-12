@@ -36,6 +36,9 @@ class UserFormRequest extends FormRequest
             'role_id' => 'required|in:'.$availableRoles,
             'payer_type' => 'nullable|in:self,company',
             'company_card' => 'nullable|file|mimes:pdf|max:51200',
+            'postal_address' => 'nullable|string|max:500',
+            'postal_doc' => 'nullable|file|mimes:pdf|max:51200',
+            'tracking_number' => 'nullable|string|max:50',
         ];
 
         if ($isProfile) {
@@ -101,6 +104,10 @@ class UserFormRequest extends FormRequest
             'company_card.required_if' => 'Пожалуйста, загрузите карточку компании',
             'company_card.mimes' => 'Карточка компании должна быть в формате PDF',
             'company_card.max' => 'Размер файла не должен превышать 50 МБ',
+            'postal_address.max' => 'Почтовый адрес должен быть не более 500 символов',
+            'postal_doc.mimes' => 'Скан документа должен быть в формате PDF',
+            'postal_doc.max' => 'Размер скана документа не должен превышать 50 МБ',
+            'tracking_number.max' => 'Трек-номер должен быть не более 50 символов',
         ];
     }
 }

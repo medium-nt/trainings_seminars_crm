@@ -6,27 +6,28 @@
 @stop
 
 @section('content')
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Данные пользователя</h3>
-                </div>
+            <!-- Форма редактирования пользователя -->
+            <form action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('put')
 
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Данные пользователя</h3>
                     </div>
-                @endif
-
-                <div class="card-body">
-                    <form action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('put')
+                    <div class="card-body">
                         <div class="form-group">
                             <label for="last_name">Фамилия</label>
                             <input type="text" name="last_name" class="form-control" placeholder="Фамилия" value="{{ $user->last_name }}" required>
@@ -95,13 +96,59 @@
                             <label for="password_confirmation">Подтверждение пароля</label>
                             <input type="password" name="password_confirmation" class="form-control" placeholder="Подтверждение пароля">
                         </div>
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-success">Сохранить</button>
-                            <a href="{{ $user->isClient() ? route('users.clients') : route('users.employees') }}" class="btn btn-secondary">Отмена</a>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
+
+                @if($user->isClient())
+                <!-- Почтовый адрес (только для клиентов) -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Получение сертификата/диплома</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="postal_address">Почтовый адрес для доставки (с индексом)</label>
+                            <input type="text" class="form-control" id="postal_address"
+                                   value="{{ old('postal_address', $user->postal_address) }}"
+                                   name="postal_address" placeholder="Индекс, область, город, улица, дом, квартира">
+                        </div>
+
+                        <!-- Скан документа -->
+                        <div class="form-group">
+                            <label for="postal_doc">Скан документа</label>
+                            @if($user->hasPostalDoc())
+                                <div class="alert alert-info py-1">
+                                    Загружен: {{ $user->postal_doc_name }}
+                                    <a href="{{ $user->postalDocUrl() }}" target="_blank" class="btn btn-sm btn-info ml-2">Просмотр</a>
+                                    <button type="button"
+                                            data-url="{{ route('profile.postal-doc.delete') }}"
+                                            data-token="{{ csrf_token() }}"
+                                            data-user-id="{{ $user->id }}"
+                                            class="btn btn-sm btn-danger ml-2 btn-delete-postal-doc">
+                                        Удалить
+                                    </button>
+                                </div>
+                            @endif
+                            <input type="file" class="form-control-file" id="postal_doc" name="postal_doc" accept=".pdf">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tracking_number">Трек-номер</label>
+                            <input type="text" class="form-control" id="tracking_number"
+                                   value="{{ old('tracking_number', $user->tracking_number) }}"
+                                   name="tracking_number" placeholder="Номер для отслеживания почтового отправления">
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                <div class="card">
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-success">Сохранить</button>
+                        <a href="{{ $user->isClient() ? route('users.clients') : route('users.employees') }}" class="btn btn-secondary">Отмена</a>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <!-- Блок документов (только для клиентов) -->
@@ -111,34 +158,34 @@
                     <div class="card-header">
                         <h3 class="card-title">Документы пользователя: {{ $user->full_name }}</h3>
                     </div>
-                <div class="card-body">
-                    @foreach($documentTypes as $docType)
-                        <div class="document-type-block mb-4 p-3 border rounded">
-                            <h5>{{ $docType['title'] }}</h5>
+                    <div class="card-body">
+                        @foreach($documentTypes as $docType)
+                            <div class="document-type-block mb-4 p-3 border rounded">
+                                <h5>{{ $docType['title'] }}</h5>
 
-                            <form action="{{ route('documents.store') }}" method="POST"
-                                  enctype="multipart/form-data" class="upload-form mt-2">
-                                @csrf
-                                <input type="hidden" name="type" value="{{ $docType['type'] }}">
-                                <input type="hidden" name="user_id" value="{{ $user->id }}">
-                                <div class="row g-2">
-                                    <div class="col-12 col-sm">
-                                        <input type="file" name="files[]" class="form-control"
-                                               accept=".pdf" multiple required>
+                                <form action="{{ route('documents.store') }}" method="POST"
+                                      enctype="multipart/form-data" class="upload-form mt-2">
+                                    @csrf
+                                    <input type="hidden" name="type" value="{{ $docType['type'] }}">
+                                    <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                    <div class="row g-2">
+                                        <div class="col-12 col-sm">
+                                            <input type="file" name="files[]" class="form-control"
+                                                   accept=".pdf" multiple required>
+                                        </div>
+                                        <div class="col-12 col-sm-auto">
+                                            <button type="submit" class="btn btn-primary w-100">Загрузить</button>
+                                        </div>
                                     </div>
-                                    <div class="col-12 col-sm-auto">
-                                        <button type="submit" class="btn btn-primary w-100">Загрузить</button>
-                                    </div>
+                                </form>
+
+                                <div class="documents-list mt-3">
+                                    @foreach($documents->where('type', $docType['type']) as $doc)
+                                        @include('partials.document-item-admin', ['document' => $doc])
+                                    @endforeach
                                 </div>
-                            </form>
-
-                            <div class="documents-list mt-3">
-                                @foreach($documents->where('type', $docType['type']) as $doc)
-                                    @include('partials.document-item-admin', ['document' => $doc])
-                                @endforeach
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
                     </div>
                 </div>
             </div>

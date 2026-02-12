@@ -23,7 +23,7 @@ class UserService
         if (isset($data['company_card']) && $data['company_card'] instanceof \Illuminate\Http\UploadedFile) {
             // Удаляем старый файл, если есть
             if ($user->company_card_path) {
-                Storage::delete($user->company_card_path);
+                Storage::disk('public')->delete($user->company_card_path);
             }
 
             // Сохраняем новый файл
@@ -50,11 +50,32 @@ class UserService
         // Если тип изменился с company на self — удаляем файл
         if (isset($data['payer_type']) && $data['payer_type'] === 'self' && $user->payer_type === 'company') {
             if ($user->company_card_path) {
-                Storage::delete($user->company_card_path);
+                Storage::disk('public')->delete($user->company_card_path);
             }
             $data['company_card_path'] = null;
             $data['company_card_name'] = null;
         }
+
+        return $data;
+    }
+
+    public function handlePostalDocUpload(array $data, User $user): array
+    {
+        if (isset($data['postal_doc']) && $data['postal_doc'] instanceof \Illuminate\Http\UploadedFile) {
+            // Удаляем старый файл, если есть
+            if ($user->postal_doc_path) {
+                Storage::disk('public')->delete($user->postal_doc_path);
+            }
+
+            // Сохраняем новый файл
+            $file = $data['postal_doc'];
+            $path = $file->store("documents/{$user->id}/postal_doc", 'public');
+
+            $data['postal_doc_path'] = $path;
+            $data['postal_doc_name'] = $file->getClientOriginalName();
+        }
+
+        unset($data['postal_doc']);
 
         return $data;
     }

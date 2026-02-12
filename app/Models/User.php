@@ -37,6 +37,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'payer_type',
         'company_card_path',
         'company_card_name',
+        'postal_address',
+        'postal_doc_path',
+        'postal_doc_name',
+        'tracking_number',
     ];
 
     /**
@@ -243,11 +247,26 @@ class User extends Authenticatable implements MustVerifyEmail
         return Storage::url($this->company_card_path);
     }
 
+    public function hasPostalDoc(): bool
+    {
+        return $this->postal_doc_path !== null
+            && $this->postal_doc_name !== null
+            && Storage::disk('public')->exists($this->postal_doc_path);
+    }
+
+    public function postalDocUrl(): string
+    {
+        return Storage::url($this->postal_doc_path);
+    }
+
     protected static function booted(): void
     {
         static::deleted(function (User $user) {
             if ($user->company_card_path) {
-                Storage::delete($user->company_card_path);
+                Storage::disk('public')->delete($user->company_card_path);
+            }
+            if ($user->postal_doc_path) {
+                Storage::disk('public')->delete($user->postal_doc_path);
             }
         });
     }

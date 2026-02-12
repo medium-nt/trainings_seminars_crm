@@ -6,28 +6,28 @@
 @stop
 
 @section('content')
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-md-6">
+            <!-- Форма профиля -->
+            <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+                @method('PUT')
+                @csrf
 
-            <!-- Блок с личными данными -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Личные данные</h3>
-                </div>
-
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
+                <!-- Блок с личными данными -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Личные данные</h3>
                     </div>
-                @endif
-
-                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
-                    @method('PUT')
-                    @csrf
                     <div class="card-body">
                         <div class="form-group">
                             <label for="last_name">Фамилия</label>
@@ -112,47 +112,91 @@
                             <input type="password" class="form-control" id="password_confirmation"
                                    name="password_confirmation" placeholder="Подтверждение пароля">
                         </div>
+                    </div>
+                </div>
+
+                <!-- Почтовый адрес -->
+                @if(auth()->user()->isClient())
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Получение сертификата/диплома</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="postal_address">Почтовый адрес для доставки (с индексом)</label>
+                            <input type="text" class="form-control" id="postal_address"
+                                   value="{{ old('postal_address', $user->postal_address) }}"
+                                   name="postal_address" placeholder="Индекс, область, город, улица, дом, квартира">
+                        </div>
+
+                        @if($user->hasPostalDoc())
+                        <!-- Скан документа (только просмотр) -->
+                        <div class="form-group">
+                            <label>Скан документа</label>
+                            <div class="alert alert-info py-2">
+                                <i class="fas fa-file-pdf"></i> {{ $user->postal_doc_name }}
+                                <a href="{{ $user->postalDocUrl() }}" target="_blank" class="btn btn-sm btn-info ml-2">
+                                    <i class="fas fa-download"></i> Скачать
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Трек-номер (только чтение) -->
+                        @if($user->tracking_number)
+                        <div class="form-group">
+                            <label>Трек-номер</label>
+                            <p class="form-control-static"><strong>{{ $user->tracking_number }}</strong></p>
+                        </div>
+                        @endif
+                        @endif
 
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Сохранить</button>
                         </div>
                     </div>
-                </form>
-            </div>
-
-            <!-- Блок оплаты (только для клиентов с группами) -->
-            @if(auth()->user()->isClient() && $groups->count() > 0)
+                </div>
+                @else
+                <!-- Для сотрудников кнопка сохранения -->
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Оплата</h3>
-                    </div>
-                    <div class="card-body table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <thead class="thead-dark">
-                            <tr>
-                                <th>Группа</th>
-                                <th>Стоимость</th>
-                                <th>Оплачено</th>
-                                <th>Остаток</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($groups as $group)
-                                <tr>
-                                    <td>{{ $group['title'] }}</td>
-                                    <td>{{ number_format($group['price'], 2, '.', ' ') }} ₽</td>
-                                    <td>{{ number_format($group['paid'], 2, '.', ' ') }} ₽</td>
-                                    <td class="{{ $group['remaining'] > 0 ? 'text-danger' : 'text-success' }}">
-                                        {{ number_format($group['remaining'], 2, '.', ' ') }} ₽
-                                    </td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
                     </div>
                 </div>
-            @endif
+                @endif
 
+                <!-- Блок оплаты (только для клиентов с группами) -->
+                @if(auth()->user()->isClient() && $groups->count() > 0)
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Оплата</h3>
+                        </div>
+                        <div class="card-body table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th>Группа</th>
+                                    <th>Стоимость</th>
+                                    <th>Оплачено</th>
+                                    <th>Остаток</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($groups as $group)
+                                    <tr>
+                                        <td>{{ $group['title'] }}</td>
+                                        <td>{{ number_format($group['price'], 2, '.', ' ') }} ₽</td>
+                                        <td>{{ number_format($group['paid'], 2, '.', ' ') }} ₽</td>
+                                        <td class="{{ $group['remaining'] > 0 ? 'text-danger' : 'text-success' }}">
+                                            {{ number_format($group['remaining'], 2, '.', ' ') }} ₽
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
+            </form>
         </div>
 
         <!-- Блок документов (только для клиентов) -->
@@ -162,33 +206,33 @@
                     <div class="card-header">
                         <h3 class="card-title">Мои документы</h3>
                     </div>
-                <div class="card-body">
-                    @foreach($documentTypes as $docType)
-                        <div class="document-type-block mb-4 p-3 border rounded">
-                            <h5>{{ $docType['title'] }}</h5>
+                    <div class="card-body">
+                        @foreach($documentTypes as $docType)
+                            <div class="document-type-block mb-4 p-3 border rounded">
+                                <h5>{{ $docType['title'] }}</h5>
 
-                            <form action="{{ route('documents.store') }}" method="POST"
-                                  enctype="multipart/form-data" class="upload-form mt-2">
-                                @csrf
-                                <input type="hidden" name="type" value="{{ $docType['type'] }}">
-                                <div class="row g-2">
-                                    <div class="col-12 col-sm">
-                                        <input type="file" name="files[]" class="form-control"
-                                               accept=".pdf" multiple required>
+                                <form action="{{ route('documents.store') }}" method="POST"
+                                      enctype="multipart/form-data" class="upload-form mt-2">
+                                    @csrf
+                                    <input type="hidden" name="type" value="{{ $docType['type'] }}">
+                                    <div class="row g-2">
+                                        <div class="col-12 col-sm">
+                                            <input type="file" name="files[]" class="form-control"
+                                                   accept=".pdf" multiple required>
+                                        </div>
+                                        <div class="col-12 col-sm-auto">
+                                            <button type="submit" class="btn btn-primary w-100">Загрузить</button>
+                                        </div>
                                     </div>
-                                    <div class="col-12 col-sm-auto">
-                                        <button type="submit" class="btn btn-primary w-100">Загрузить</button>
-                                    </div>
+                                </form>
+
+                                <div class="documents-list mt-3">
+                                    @foreach($documents->where('type', $docType['type']) as $doc)
+                                        @include('partials.document-item', ['document' => $doc])
+                                    @endforeach
                                 </div>
-                            </form>
-
-                            <div class="documents-list mt-3">
-                                @foreach($documents->where('type', $docType['type']) as $doc)
-                                    @include('partials.document-item', ['document' => $doc])
-                                @endforeach
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
                     </div>
                 </div>
             </div>
