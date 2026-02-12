@@ -72,7 +72,10 @@
                                 <tbody>
                                 @foreach($group->clients as $client)
                                     <tr>
-                                        <td>{{ $client->full_name }}</td>
+                                        <td>
+                                            <a href="{{ route('users.edit', $client->id) }}" class="text-primary" target="_blank">
+                                                {{ $client->full_name }}
+                                            </a></td>
                                         <td>{{ $client->email }}</td>
                                         <td>{{ $client->pivot->created_at?->format('d.m.Y') ?? '---' }}</td>
                                         <td>
