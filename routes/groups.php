@@ -21,6 +21,8 @@ Route::middleware(['blocked'])->prefix('/groups')->group(function () {
             ->name('groups.clients.create');
         Route::post('', [GroupClientsController::class, 'store'])
             ->name('groups.clients.store');
+        Route::patch('/{user}/price', [GroupClientsController::class, 'updatePrice'])
+            ->name('groups.clients.update-price');
         Route::delete('/{user}', [GroupClientsController::class, 'destroy'])
             ->name('groups.clients.destroy');
     });

@@ -30,7 +30,7 @@ class GroupClientsController extends Controller
         $existingClientIds = $group->clients()->pluck('users.id')->toArray();
         $newClientIds = array_diff($request->clients, $existingClientIds);
 
-        if (!empty($newClientIds)) {
+        if (! empty($newClientIds)) {
             $group->clients()->attach($newClientIds);
         }
 
@@ -46,5 +46,32 @@ class GroupClientsController extends Controller
         return redirect()
             ->route('groups.show', $group->id)
             ->with('success', 'Слушатель удален из группы');
+    }
+
+    public function updatePrice(Request $request, Group $group, User $user)
+    {
+        $request->validate([
+            'price' => 'nullable|numeric|min:0|max:99999999.99',
+        ], [
+            'price.numeric' => 'Цена должна быть числом',
+            'price.min' => 'Цена не может быть отрицательной',
+            'price.max' => 'Слишком большое значение цены',
+        ]);
+
+        $group->clients()->updateExistingPivot($user->id, [
+            'price' => $request->price ? number_format($request->price, 2, '.', '') : null,
+        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'price' => $request->price,
+                'formatted' => $request->price ? number_format($request->price, 2, '.', ' ').' ₽' : '---',
+            ]);
+        }
+
+        return redirect()
+            ->route('groups.show', $group->id)
+            ->with('success', 'Цена обновлена');
     }
 }

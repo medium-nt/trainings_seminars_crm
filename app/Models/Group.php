@@ -30,6 +30,7 @@ class Group extends Model
     public function clients(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'group_user', 'group_id', 'client_id')
+            ->withPivot('price')
             ->withTimestamps()
             ->whereHas('role', fn ($q) => $q->where('name', 'client'));
     }

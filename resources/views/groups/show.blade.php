@@ -65,18 +65,42 @@
                                 <tr>
                                     <th>ФИО</th>
                                     <th>Email</th>
+                                    <th>Стоимость</th>
                                     <th>Добавлен</th>
                                     <th></th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($group->clients as $client)
-                                    <tr>
+                                    <tr data-client-id="{{ $client->id }}" data-current-price="{{ $client->pivot->price ?? '' }}">
                                         <td>
                                             <a href="{{ route('users.edit', $client->id) }}" class="text-primary" target="_blank">
                                                 {{ $client->full_name }}
                                             </a></td>
                                         <td>{{ $client->email }}</td>
+                                        <td class="price-cell">
+                                            <button type="button"
+                                                    class="btn btn-secondary btn-sm btn-edit-price mr-1"
+                                                    title="Редактировать цену">
+                                                ✎
+                                            </button>
+                                            <span class="price-display">
+                                                {{ $client->pivot->price ? number_format($client->pivot->price, 2, '.', ' ') . ' ₽' : '---' }}
+                                            </span>
+                                            <input type="number"
+                                                   step="0.01"
+                                                   min="0"
+                                                   max="99999999"
+                                                   class="form-control form-control-sm price-input d-none"
+                                                   style="width: 80px; display: inline-block;"
+                                                   value="{{ $client->pivot->price ?? '' }}"
+                                                   placeholder="0.00">
+                                            <button type="button"
+                                                    class="btn btn-info btn-sm btn-save-price d-none ml-1"
+                                                    title="Сохранить цену">
+                                                ✓
+                                            </button>
+                                        </td>
                                         <td>{{ $client->pivot->created_at?->format('d.m.Y') ?? '---' }}</td>
                                         <td>
                                             <form action="{{ route('groups.clients.destroy', [$group->id, $client->id]) }}" method="POST" style="display: inline;">
@@ -105,5 +129,110 @@
 @stop
 
 @section('js')
+    <script>
+    (function() {
+        // Inline-редактирование
+        document.querySelectorAll('.btn-edit-price').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
 
+                const row = this.closest('tr');
+                const priceInput = row.querySelector('.price-input');
+                const priceDisplay = row.querySelector('.price-display');
+                const saveBtn = row.querySelector('.btn-save-price');
+
+                priceInput.classList.remove('d-none');
+                priceDisplay.classList.add('d-none');
+                this.classList.add('d-none');
+                saveBtn.classList.remove('d-none');
+
+                priceInput.focus();
+            });
+        });
+
+        document.querySelectorAll('.btn-save-price').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const row = this.closest('tr');
+                const clientId = row.dataset.clientId;
+                const priceInput = row.querySelector('.price-input');
+                const price = priceInput.value;
+
+                savePriceInline(clientId, price, row);
+            });
+        });
+
+        document.querySelectorAll('.price-input').forEach(input => {
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const row = this.closest('tr');
+                    const saveBtn = row.querySelector('.btn-save-price');
+                    saveBtn.click();
+                }
+                if (e.key === 'Escape') {
+                    const row = this.closest('tr');
+                    this.value = row.dataset.currentPrice || '';
+                    this.blur();
+                }
+            });
+
+            input.addEventListener('blur', function() {
+                const row = this.closest('tr');
+                const saveBtn = row.querySelector('.btn-save-price');
+
+                if (!saveBtn.classList.contains('d-none')) {
+                    return;
+                }
+
+                this.classList.add('d-none');
+                row.querySelector('.price-display').classList.remove('d-none');
+                row.querySelector('.btn-edit-price').classList.remove('d-none');
+            });
+        });
+
+        function savePriceInline(clientId, price, row) {
+            const btn = row.querySelector('.btn-save-price');
+            const originalText = btn.innerHTML;
+            const url = '/groups/' + {{ $group->id }} + '/clients/' + clientId + '/price';
+            btn.disabled = true;
+            btn.innerHTML = '...';
+
+            $.ajax({
+                url: url,
+                method: 'PATCH',
+                data: JSON.stringify({ price: price }),
+                contentType: 'application/json',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(data) {
+                    if (data.success) {
+                        row.querySelector('.price-display').textContent = data.formatted;
+                        row.dataset.currentPrice = price || '';
+
+                        const priceInput = row.querySelector('.price-input');
+                        const priceDisplay = row.querySelector('.price-display');
+                        const editBtn = row.querySelector('.btn-edit-price');
+
+                        priceInput.classList.add('d-none');
+                        priceDisplay.classList.remove('d-none');
+                        editBtn.classList.remove('d-none');
+                        btn.classList.add('d-none');
+                    }
+                },
+                error: function(xhr) {
+                    alert('Ошибка при сохранении: HTTP ' + xhr.status);
+                },
+                complete: function() {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            });
+        }
+    })();
+    </script>
 @stop
