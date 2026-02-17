@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 class HomeController extends Controller
 {
     /**
@@ -23,6 +21,11 @@ class HomeController extends Controller
      */
     public function index()
     {
+        // Клиентов перенаправляем на профиль
+        if (auth()->user()->isClient()) {
+            return redirect()->route('profile');
+        }
+
         return view('home', [
             'user' => auth()->user(),
             'title' => 'Главная страница',

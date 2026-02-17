@@ -300,9 +300,16 @@ return [
 
     'menu' => [
         [
+            'text' => 'Профиль',
+            'url' => 'profile',
+            'icon' => 'fas fa-fw fa-user',
+            'can' => 'is-client',
+        ],
+        [
             'text' => 'Дашборд',
             'url' => 'home',
             'icon' => 'fas fa-fw fa-home',
+            'can' => 'is-admin-or-manager-or-teacher',
         ],
         [
             'text' => 'groups',
