@@ -34,9 +34,9 @@ class UsersController
             return [
                 'id' => $group->id,
                 'title' => $group->title,
-                'price' => $group->price,
+                'price' => $group->pivot->price,
                 'paid' => $paid,
-                'remaining' => max(0, $group->price - $paid),
+                'remaining' => max(0, $group->pivot->price - $paid),
             ];
         });
 

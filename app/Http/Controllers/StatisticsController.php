@@ -82,7 +82,7 @@ class StatisticsController extends Controller
         $paymentStatus = $request->get('payment_status');
 
         $query = User::where('role_id', 1)
-            ->with(['studentGroups', 'payments']);
+            ->with(['studentGroups' => fn ($q) => $q->withPivot('price'), 'payments']);
 
         if ($groupId) {
             $query->whereHas('studentGroups', function ($q) use ($groupId) {
@@ -104,7 +104,7 @@ class StatisticsController extends Controller
                     ->where('group_id', $group->id)
                     ->sum('amount');
 
-                $remaining = max(0, $group->price - $paid);
+                $remaining = max(0, $group->pivot->price - $paid);
                 $isFullyPaid = $remaining == 0;
 
                 $statistics[] = [
@@ -112,7 +112,7 @@ class StatisticsController extends Controller
                     'client_name' => $client->full_name,
                     'group_id' => $group->id,
                     'group_title' => $group->title,
-                    'price' => $group->price,
+                    'price' => $group->pivot->price,
                     'paid' => $paid,
                     'remaining' => $remaining,
                     'is_fully_paid' => $isFullyPaid,

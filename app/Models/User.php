@@ -109,7 +109,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function studentGroups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'group_user', 'client_id')->withTimestamps();
+        return $this->belongsToMany(Group::class, 'group_user', 'client_id')
+            ->withPivot('price')
+            ->withTimestamps();
     }
 
     public function documents(): HasMany
