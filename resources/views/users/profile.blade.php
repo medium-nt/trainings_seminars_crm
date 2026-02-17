@@ -53,8 +53,35 @@
                                    name="phone" placeholder="Телефон" required>
                         </div>
 
-                        @if(auth()->user()->isClient())
-                        <!-- Кто платит -->
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" value="{{ $user->email }}"
+                                   name="email" placeholder="Email" required>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="form-group">
+                            <label for="password">Новый пароль</label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="Пароль">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password_confirmation">Подтверждение пароля</label>
+                            <input type="password" class="form-control" id="password_confirmation"
+                                   name="password_confirmation" placeholder="Подтверждение пароля">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Кто платит -->
+                @if(auth()->user()->isClient())
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Кто платит</h3>
+                    </div>
+                    <div class="card-body">
                         <div class="form-group">
                             <label>Кто платит</label>
                             <div class="radio">
@@ -91,29 +118,9 @@
                             <input type="file" class="form-control-file" id="company_card" name="company_card"
                                    accept=".pdf">
                         </div>
-                        @endif
-
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" value="{{ $user->email }}"
-                                   name="email" placeholder="Email" required>
-                        </div>
-
-                        <hr class="my-4">
-
-                        <div class="form-group">
-                            <label for="password">Новый пароль</label>
-                            <input type="password" class="form-control" id="password" name="password"
-                                   placeholder="Пароль">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password_confirmation">Подтверждение пароля</label>
-                            <input type="password" class="form-control" id="password_confirmation"
-                                   name="password_confirmation" placeholder="Подтверждение пароля">
-                        </div>
                     </div>
                 </div>
+                @endif
 
                 <!-- Почтовый адрес -->
                 @if(auth()->user()->isClient())
@@ -149,53 +156,18 @@
                         </div>
                         @endif
                         @endif
-
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-primary">Сохранить</button>
-                        </div>
                     </div>
                 </div>
-                @else
-                <!-- Для сотрудников кнопка сохранения -->
+                @endif
+
+                <!-- Кнопка сохранения всех изменений -->
                 <div class="card">
                     <div class="card-body">
-                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                        <div class="text-muted mb-2">Все изменения выше будут сохранены</div>
+                        <button type="submit" class="btn btn-primary btn-lg">Сохранить все изменения</button>
                     </div>
                 </div>
-                @endif
-
-                <!-- Блок оплаты (только для клиентов с группами) -->
-                @if(auth()->user()->isClient() && $groups->count() > 0)
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Оплата</h3>
-                        </div>
-                        <div class="card-body table-responsive">
-                            <table class="table table-bordered table-striped">
-                                <thead class="thead-dark">
-                                <tr>
-                                    <th>Группа</th>
-                                    <th>Стоимость</th>
-                                    <th>Оплачено</th>
-                                    <th>Остаток</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @foreach($groups as $group)
-                                    <tr>
-                                        <td>{{ $group['title'] }}</td>
-                                        <td>{{ number_format($group['price'], 2, '.', ' ') }} ₽</td>
-                                        <td>{{ number_format($group['paid'], 2, '.', ' ') }} ₽</td>
-                                        <td class="{{ $group['remaining'] > 0 ? 'text-danger' : 'text-success' }}">
-                                            {{ number_format($group['remaining'], 2, '.', ' ') }} ₽
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                @endif
+            </form>
             </form>
         </div>
 
@@ -235,6 +207,39 @@
                         @endforeach
                     </div>
                 </div>
+
+                <!-- Блок оплаты (только для клиентов с группами) -->
+                @if(auth()->user()->isClient() && $groups->count() > 0)
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Оплата</h3>
+                        </div>
+                        <div class="card-body table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th>Группа</th>
+                                    <th>Стоимость</th>
+                                    <th>Оплачено</th>
+                                    <th>Остаток</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($groups as $group)
+                                    <tr>
+                                        <td>{{ $group['title'] }}</td>
+                                        <td>{{ number_format($group['price'], 2, '.', ' ') }} ₽</td>
+                                        <td>{{ number_format($group['paid'], 2, '.', ' ') }} ₽</td>
+                                        <td class="{{ $group['remaining'] > 0 ? 'text-danger' : 'text-success' }}">
+                                            {{ number_format($group['remaining'], 2, '.', ' ') }} ₽
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
             </div>
         @endif
     </div>
