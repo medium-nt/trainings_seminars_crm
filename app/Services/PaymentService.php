@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Group;
 use App\Models\Payment;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
 
@@ -43,10 +43,12 @@ class PaymentService
 
     public function checkPaymentAmount(int $userId, int $groupId, float $amount, ?int $excludePaymentId = null): ?array
     {
-        $group = Group::find($groupId);
-        $groupPrice = $group?->price ?? 0;
+        $price = DB::table('group_user')
+            ->where('client_id', $userId)
+            ->where('group_id', $groupId)
+            ->value('price') ?? 0;
 
-        if ($groupPrice <= 0) {
+        if ($price <= 0) {
             return null;
         }
 
@@ -63,17 +65,17 @@ class PaymentService
 
         // Если будет 3 платежа - проверяем точное соответствие
         if ($paymentsCount >= 2) {
-            if (round($totalAmount, 2) != round($groupPrice, 2)) {
+            if (round($totalAmount, 2) != round($price, 2)) {
                 return [
                     'error' => sprintf('Сумма всех трёх платежей (%.2f ₽) должна быть равна стоимости группы (%.2f ₽). Разница: %.2f ₽.',
-                        $totalAmount, $groupPrice, abs($totalAmount - $groupPrice)
+                        $totalAmount, $price, abs($totalAmount - $price)
                     ),
                 ];
             }
-        } elseif ($totalAmount > $groupPrice) {
+        } elseif ($totalAmount > $price) {
             return [
                 'error' => sprintf('Сумма всех платежей (%.2f ₽) превышает стоимость группы (%.2f ₽).',
-                    $totalAmount, $groupPrice
+                    $totalAmount, $price
                 ),
             ];
         }
