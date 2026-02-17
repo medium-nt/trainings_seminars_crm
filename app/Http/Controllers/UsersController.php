@@ -59,10 +59,6 @@ class UsersController
         $user = auth()->user();
 
         $data = $userService->handlePayerTypeChange($data, $user);
-        $data = $userService->handleCompanyCardUpload(
-            array_merge($data, ['company_card' => $request->file('company_card')]),
-            $user
-        );
         $data = $userService->handlePostalDocUpload(
             array_merge($data, ['postal_doc' => $request->file('postal_doc')]),
             $user
@@ -86,6 +82,7 @@ class UsersController
         $user->update([
             'company_card_path' => null,
             'company_card_name' => null,
+            'payer_type' => 'self', // Сбрасываем на "Лично"
         ]);
 
         if (request()->expectsJson()) {
@@ -93,6 +90,32 @@ class UsersController
         }
 
         return back()->with('success', 'Карточка компании удалена.');
+    }
+
+    public function uploadCompanyCard(Request $request)
+    {
+        $request->validate([
+            'company_card' => 'required|file|mimes:pdf|max:51200',
+        ]);
+
+        $user = auth()->user();
+
+        // Удаляем старый файл
+        if ($user->company_card_path) {
+            Storage::disk('public')->delete($user->company_card_path);
+        }
+
+        // Сохраняем новый
+        $file = $request->file('company_card');
+        $path = $file->store("documents/{$user->id}/company_card", 'public');
+
+        $user->update([
+            'company_card_path' => $path,
+            'company_card_name' => $file->getClientOriginalName(),
+            'payer_type' => 'company', // Автоматически устанавливаем плательщика
+        ]);
+
+        return back()->with('success', 'Карточка компании загружена.');
     }
 
     public function deletePostalDoc()

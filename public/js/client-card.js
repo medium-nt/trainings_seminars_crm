@@ -1,16 +1,50 @@
 $(document).ready(function() {
-    // Показать/скрыть блок карточки компании
+    // Показать/скрыть блок карточки компании в "Мои документы"
     function toggleCompanyCardBlock() {
-        if ($('input[name="payer_type"]:checked').val() === 'company') {
-            $('.company-card-block').slideDown();
-        } else {
-            $('.company-card-block').slideUp();
-        }
+        const isCompany = $('input[name="payer_type"]:checked').val() === 'company';
+
+        // Показываем/скрываем блок в "Мои документы"
+        $('.company-card-document-block').toggle(isCompany);
     }
 
-    $('input[name="payer_type"]').on('change', toggleCompanyCardBlock);
+    $('input[name="payer_type"]').on('change', function() {
+        const newValue = $(this).val();
 
-    // Инициализация при загрузке (учитывает old() после ошибки валидации)
+        // Если выбрали "Лично" и есть загруженная карточка — удаляем её
+        if (newValue === 'self' && $('.btn-delete-company-card').length > 0) {
+            if (confirm('При выборе "Лично" карточка компании будет удалена. Продолжить?')) {
+                const deleteButton = $('.btn-delete-company-card').first();
+                const formData = new FormData();
+                formData.append('_token', deleteButton.data('token'));
+                formData.append('_method', 'DELETE');
+
+                fetch(deleteButton.data('url'), {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    }
+                })
+                .catch(() => {
+                    window.location.reload();
+                });
+            } else {
+                // Отмена — возвращаем выбор на "Компания"
+                $('input[name="payer_type"][value="company"]').prop('checked', true);
+                return false;
+            }
+        }
+
+        toggleCompanyCardBlock();
+    });
+
+    // Инициализация при загрузке
     toggleCompanyCardBlock();
 
     // Удаление карточки компании

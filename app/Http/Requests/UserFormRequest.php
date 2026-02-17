@@ -35,7 +35,6 @@ class UserFormRequest extends FormRequest
             'phone' => 'nullable|string|min:8|max:15',
             'role_id' => 'required|in:'.$availableRoles,
             'payer_type' => 'nullable|in:self,company',
-            'company_card' => 'nullable|file|mimes:pdf|max:51200',
             'postal_address' => 'nullable|string|max:500',
             'postal_doc' => 'nullable|file|mimes:pdf|max:51200',
             'tracking_number' => 'nullable|string|max:50',
@@ -45,31 +44,44 @@ class UserFormRequest extends FormRequest
             $user = auth()->user();
             $rules['email'] = 'required|email|max:255|unique:users,email,'.$user->id;
             $rules['password'] = 'nullable|confirmed|string|min:6';
-
-            // Файл обязателен только если выбрана "Компания" и нет загруженного файла
-            if (! $user->hasCompanyCard()) {
-                $rules['company_card'] = 'required_if:payer_type,company|file|mimes:pdf|max:51200';
-            }
             unset($rules['role_id']);
         } elseif ($isUpdate) {
             $user = $this->route('user');
             $rules['email'] = 'required|email|max:255|unique:users,email,'.$user->id;
             $rules['password'] = 'nullable|confirmed|string|min:6';
-
-            // Файл обязателен только если выбрана "Компания" и нет загруженного файла
-            if (! $user->hasCompanyCard()) {
-                $rules['company_card'] = 'required_if:payer_type,company|file|mimes:pdf|max:51200';
-            }
             unset($rules['role_id']);
         } else {
             $rules['password'] = 'required|confirmed|string|min:6';
             // При создании нового пользователя payer_type обязателен
             $rules['payer_type'] = 'required|in:self,company';
-            // При создании нового пользователя файл обязателен если выбрана "Компания"
-            $rules['company_card'] = 'required_if:payer_type,company|file|mimes:pdf|max:51200';
         }
 
         return $rules;
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $isProfile = $this->route()->getName() === 'profile.update';
+            $isUpdate = $this->route('user') !== null;
+            $payerType = $this->input('payer_type');
+
+            // Проверяем: если "Компания", то карточка должна быть загружена
+            if (($isProfile || $isUpdate) && $payerType === 'company') {
+                if ($isProfile) {
+                    $user = auth()->user();
+                } else {
+                    $user = $this->route('user');
+                }
+
+                if (! $user->company_card_path) {
+                    $validator->errors()->add('payer_type', 'Пожалуйста, загрузите карточку компании в разделе "Мои документы" перед сохранением');
+                }
+            }
+        });
     }
 
     /**
@@ -101,9 +113,6 @@ class UserFormRequest extends FormRequest
             'role_id.in' => 'Выбранная роль не существует',
             'payer_type.required' => 'Пожалуйста, выберите, кто платит',
             'payer_type.in' => 'Некорректное значение плательщика',
-            'company_card.required_if' => 'Пожалуйста, загрузите карточку компании',
-            'company_card.mimes' => 'Карточка компании должна быть в формате PDF',
-            'company_card.max' => 'Размер файла не должен превышать 50 МБ',
             'postal_address.max' => 'Почтовый адрес должен быть не более 500 символов',
             'postal_doc.mimes' => 'Скан документа должен быть в формате PDF',
             'postal_doc.max' => 'Размер скана документа не должен превышать 50 МБ',

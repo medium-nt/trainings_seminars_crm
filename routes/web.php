@@ -27,6 +27,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('profile.update');
         Route::delete('/company-card', [App\Http\Controllers\UsersController::class, 'deleteCompanyCard'])
             ->name('profile.company-card.delete');
+        Route::post('/company-card', [App\Http\Controllers\UsersController::class, 'uploadCompanyCard'])
+            ->name('profile.company-card.upload');
         Route::delete('/postal-doc', [App\Http\Controllers\UsersController::class, 'deletePostalDoc'])
             ->name('profile.postal-doc.delete');
     });

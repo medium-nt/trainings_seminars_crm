@@ -99,25 +99,6 @@
                                 </label>
                             </div>
                         </div>
-
-                        <!-- Загрузка карточки компании (условное) -->
-                        <div class="form-group company-card-block" @if(old('payer_type', $user->payer_type) !== 'company') style="display:none;" @endif>
-                            <label for="company_card">Карточка компании (PDF)</label>
-                            @if($user->hasCompanyCard())
-                                <div class="alert alert-info py-1">
-                                    Загружен: {{ $user->company_card_name }}
-                                    <a href="{{ $user->companyCardUrl() }}" target="_blank" class="btn btn-sm btn-info ml-2">Просмотр</a>
-                                    <button type="button"
-                                            data-url="{{ route('profile.company-card.delete') }}"
-                                            data-token="{{ csrf_token() }}"
-                                            class="btn btn-sm btn-danger ml-2 btn-delete-company-card">
-                                        Удалить
-                                    </button>
-                                </div>
-                            @endif
-                            <input type="file" class="form-control-file" id="company_card" name="company_card"
-                                   accept=".pdf">
-                        </div>
                     </div>
                 </div>
                 @endif
@@ -168,7 +149,6 @@
                     </div>
                 </div>
             </form>
-            </form>
         </div>
 
         <!-- Блок документов (только для клиентов) -->
@@ -179,6 +159,42 @@
                         <h3 class="card-title">Мои документы</h3>
                     </div>
                     <div class="card-body">
+                        <!-- Карточка компании -->
+                        @if(auth()->user()->isClient())
+                            <div class="document-type-block mb-4 p-3 border rounded company-card-document-block" @if(auth()->user()->payer_type !== 'company') style="display:none;" @endif>
+                                <h5>Карточка компании</h5>
+
+                                @if($user->hasCompanyCard())
+                                    <div class="alert alert-info py-2">
+                                        <i class="fas fa-file-pdf"></i> {{ $user->company_card_name }}
+                                        <a href="{{ $user->companyCardUrl() }}" target="_blank" class="btn btn-sm btn-info ml-2">
+                                            <i class="fas fa-download"></i> Скачать
+                                        </a>
+                                        <button type="button"
+                                                data-url="{{ route('profile.company-card.delete') }}"
+                                                data-token="{{ csrf_token() }}"
+                                                class="btn btn-sm btn-danger ml-2 btn-delete-company-card">
+                                            Удалить
+                                        </button>
+                                    </div>
+                                @endif
+
+                                <form action="{{ route('profile.company-card.upload') }}" method="POST"
+                                      enctype="multipart/form-data" class="upload-form mt-2">
+                                    @csrf
+                                    <div class="row g-2">
+                                        <div class="col-12 col-sm">
+                                            <input type="file" name="company_card" class="form-control"
+                                                   accept=".pdf" {{ $user->hasCompanyCard() ? '' : 'required' }}>
+                                        </div>
+                                        <div class="col-12 col-sm-auto">
+                                            <button type="submit" class="btn btn-primary w-100">Загрузить</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        @endif
+
                         @foreach($documentTypes as $docType)
                             <div class="document-type-block mb-4 p-3 border rounded">
                                 <h5>{{ $docType['title'] }}</h5>
