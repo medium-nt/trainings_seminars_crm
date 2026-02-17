@@ -18,7 +18,6 @@ Route::middleware(['auth', 'verified', 'blocked'])->prefix('payments')->group(fu
         ->name('payments.store');
 
     Route::get('/{payment}/download', [PaymentsController::class, 'downloadReceipt'])
-        ->can('viewAny', Payment::class)
         ->name('payments.download');
 
     Route::get('/{payment}/edit', [PaymentsController::class, 'edit'])

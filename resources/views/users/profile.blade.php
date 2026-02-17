@@ -256,6 +256,48 @@
                         </div>
                     </div>
                 @endif
+
+                <!-- История оплат -->
+                @if($payments->count() > 0)
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">История оплат</h3>
+                        </div>
+                        <div class="card-body table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Группа</th>
+                                    <th>Курс</th>
+                                    <th>Сумма</th>
+                                    <th>Чек</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($payments as $payment)
+                                    <tr>
+                                        <td>{{ $payment->payment_date->format('d.m.Y') }}</td>
+                                        <td>{{ $payment->group->title }}</td>
+                                        <td>{{ $payment->group->course->title }}</td>
+                                        <td>{{ number_format($payment->amount, 2, '.', ' ') }} ₽</td>
+                                        <td>
+                                            @if($payment->receipt_path)
+                                                <a href="{{ route('payments.download', $payment) }}"
+                                                   class="btn btn-sm btn-info">
+                                                    <i class="fas fa-download"></i> Скачать
+                                                </a>
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
             </div>
         @endif
     </div>

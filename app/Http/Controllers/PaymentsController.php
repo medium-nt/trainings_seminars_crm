@@ -149,6 +149,12 @@ class PaymentsController extends Controller
 
     public function downloadReceipt(Payment $payment)
     {
+        // Проверка доступа: админ/менеджер или владелец платежа
+        $user = auth()->user();
+        if (! $user->isAdmin() && ! $user->isManager() && $payment->user_id !== $user->id) {
+            abort(403);
+        }
+
         if (! $payment->receipt_path) {
             abort(404);
         }

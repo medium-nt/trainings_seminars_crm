@@ -40,12 +40,19 @@ class UsersController
             ];
         });
 
+        $payments = auth()->user()
+            ->payments()
+            ->with('group.course')
+            ->orderBy('payment_date', 'desc')
+            ->get();
+
         return view('users.profile', [
             'title' => 'Профиль',
             'user' => auth()->user(),
             'documentTypes' => $documentTypes,
             'documents' => auth()->user()->documents->keyBy('id'),
             'groups' => $groups,
+            'payments' => $payments,
         ]);
     }
 

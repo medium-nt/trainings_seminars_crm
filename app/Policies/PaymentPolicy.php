@@ -20,7 +20,13 @@ class PaymentPolicy
      */
     public function view(User $user, Payment $payment): bool
     {
-        return false;
+        // Клиенты могут просматривать только свои платежи
+        if ($user->isClient()) {
+            return $payment->user_id === $user->id;
+        }
+
+        // Админы и менеджеры могут просматривать все платежи
+        return $user->isAdmin() || $user->isManager();
     }
 
     /**
