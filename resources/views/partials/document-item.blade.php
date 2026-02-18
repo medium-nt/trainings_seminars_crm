@@ -27,15 +27,17 @@
                     <span class="d-none d-sm-inline">Скачать</span>
                     <span class="d-sm-none fas fa-download"></span>
                 </a>
-                <form action="{{ route('documents.destroy', $document) }}" method="POST" class="d-inline">
-                    @method('DELETE')
-                    @csrf
-                    <button type="submit" class="btn btn-outline-danger d-flex align-items-center justify-content-center"
-                            onclick="return confirm('Удалить документ?')">
-                        <span class="d-none d-sm-inline">Удалить</span>
-                        <span class="d-sm-none fas fa-trash"></span>
-                    </button>
-                </form>
+                @if(!$document->is_approved)
+                    <form action="{{ route('documents.destroy', $document) }}" method="POST" class="d-inline">
+                        @method('DELETE')
+                        @csrf
+                        <button type="submit" class="btn btn-outline-danger d-flex align-items-center justify-content-center"
+                                onclick="return confirm('Удалить документ?')">
+                            <span class="d-none d-sm-inline">Удалить</span>
+                            <span class="d-sm-none fas fa-trash"></span>
+                        </button>
+                    </form>
+                @endif
             </div>
 
             <!-- Статус -->

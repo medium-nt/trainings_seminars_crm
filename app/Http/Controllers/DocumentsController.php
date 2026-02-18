@@ -87,6 +87,12 @@ class DocumentsController extends Controller
             abort(403);
         }
 
+        // Клиент не может удалять одобренные документы
+        if ($document->is_approved && ! auth()->user()->isAdmin() && ! auth()->user()->isManager()) {
+            return back()
+                ->with('error', 'Нельзя удалить одобренный документ');
+        }
+
         $document->delete();
 
         return back()
