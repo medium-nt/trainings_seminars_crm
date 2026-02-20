@@ -22,6 +22,11 @@ Route::middleware(['blocked'])->prefix('/users')->group(function () {
     Route::post('/{user}/toggle-block', [UsersController::class, 'toggleBlock'])
         ->name('users.toggleBlock');
 
+    Route::post('/{user}/company-card', [UsersController::class, 'uploadCompanyCardForUser'])
+        ->name('users.company-card.upload');
+    Route::delete('/{user}/company-card', [UsersController::class, 'deleteCompanyCardForUser'])
+        ->name('users.company-card.delete');
+
     Route::get('/search', [UsersController::class, 'search'])
         ->name('clients.search');
 });

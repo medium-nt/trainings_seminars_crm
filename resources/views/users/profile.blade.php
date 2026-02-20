@@ -165,17 +165,42 @@
                                 <h5>Карточка компании</h5>
 
                                 @if($user->hasCompanyCard())
-                                    <div class="alert alert-info py-2">
-                                        <i class="fas fa-file-pdf"></i> {{ $user->company_card_name }}
-                                        <a href="{{ $user->companyCardUrl() }}" target="_blank" class="btn btn-sm btn-info ml-2">
-                                            <i class="fas fa-download"></i> Скачать
-                                        </a>
-                                        <button type="button"
-                                                data-url="{{ route('profile.company-card.delete') }}"
-                                                data-token="{{ csrf_token() }}"
-                                                class="btn btn-sm btn-danger ml-2 btn-delete-company-card">
-                                            Удалить
-                                        </button>
+                                    <div class="document-item border p-2 mb-2 rounded border-success bg-light">
+                                        <div class="row align-items-center">
+                                            <div class="col-12 col-sm-auto text-center text-sm-start mb-2 mb-sm-0">
+                                                <span class="fas fa-file-pdf fa-2x text-danger"></span>
+                                            </div>
+
+                                            <div class="col-12 col-sm mb-2 mb-sm-0 text-center text-sm-start">
+                                                <div class="fw-bold text-truncate" style="max-width: 200px;" title="{{ $user->company_card_name }}">
+                                                    {{ $user->company_card_name }}
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 col-sm-auto text-center">
+                                                <div class="btn-group btn-group-sm w-100 d-flex flex-wrap flex-sm-nowrap" role="group">
+                                                    <a href="{{ $user->companyCardUrl() }}"
+                                                       class="btn btn-outline-primary d-flex align-items-center justify-content-center flex-fill flex-sm-grow-0" target="_blank">
+                                                        <span class="d-none d-sm-inline">Скачать</span>
+                                                        <span class="d-sm-none fas fa-download"></span>
+                                                    </a>
+                                                    <button type="button"
+                                                            data-url="{{ route('profile.company-card.delete') }}"
+                                                            data-token="{{ csrf_token() }}"
+                                                            class="btn btn-outline-danger d-flex align-items-center justify-content-center btn-delete-company-card"
+                                                            onclick="return confirm('Удалить карточку компании?')">
+                                                        <span class="d-none d-sm-inline">Удалить</span>
+                                                        <span class="d-sm-none fas fa-trash"></span>
+                                                    </button>
+                                                </div>
+
+                                                <div class="mt-1">
+                                                    <small class="text-success">
+                                                        <span class="fas fa-check-circle"></span> Загружен
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 @endif
 

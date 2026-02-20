@@ -49,8 +49,24 @@
                             <input type="text" name="phone" class="form-control" placeholder="Телефон" value="{{ $user->phone }}">
                         </div>
 
-                        @if($user->isClient())
-                        <!-- Кто платит (только для клиентов) -->
+                        <div class="form-group">
+                            <label for="password">Пароль (оставьте пустым, чтобы не менять)</label>
+                            <input type="password" name="password" class="form-control" placeholder="Новый пароль">
+                        </div>
+                        <div class="form-group">
+                            <label for="password_confirmation">Подтверждение пароля</label>
+                            <input type="password" name="password_confirmation" class="form-control" placeholder="Подтверждение пароля">
+                        </div>
+                    </div>
+                </div>
+
+                @if($user->isClient())
+                <!-- Кто платит -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Кто платит</h3>
+                    </div>
+                    <div class="card-body">
                         <div class="form-group">
                             <label>Кто платит</label>
                             <div class="radio">
@@ -68,36 +84,9 @@
                                 </label>
                             </div>
                         </div>
-
-                        <!-- Загрузка карточки компании (условное) -->
-                        <div class="form-group company-card-block" @if(old('payer_type', $user->payer_type) !== 'company') style="display:none;" @endif>
-                            <label for="company_card">Карточка компании (PDF)</label>
-                            @if($user->hasCompanyCard())
-                                <div class="alert alert-info py-1">
-                                    Загружен: {{ $user->company_card_name }}
-                                    <a href="{{ $user->companyCardUrl() }}" target="_blank" class="btn btn-sm btn-info ml-2">Просмотр</a>
-                                    <button type="button"
-                                            data-url="{{ route('profile.company-card.delete') }}"
-                                            data-token="{{ csrf_token() }}"
-                                            class="btn btn-sm btn-danger ml-2 btn-delete-company-card">
-                                        Удалить
-                                    </button>
-                                </div>
-                            @endif
-                            <input type="file" class="form-control-file" id="company_card" name="company_card" accept=".pdf">
-                        </div>
-                        @endif
-
-                        <div class="form-group">
-                            <label for="password">Пароль (оставьте пустым, чтобы не менять)</label>
-                            <input type="password" name="password" class="form-control" placeholder="Новый пароль">
-                        </div>
-                        <div class="form-group">
-                            <label for="password_confirmation">Подтверждение пароля</label>
-                            <input type="password" name="password_confirmation" class="form-control" placeholder="Подтверждение пароля">
-                        </div>
                     </div>
                 </div>
+                @endif
 
                 @if($user->isClient())
                 <!-- Почтовый адрес (только для клиентов) -->
@@ -159,6 +148,65 @@
                         <h3 class="card-title">Документы пользователя: {{ $user->full_name }}</h3>
                     </div>
                     <div class="card-body">
+                        <!-- Карточка компании -->
+                        <div class="document-type-block mb-4 p-3 border rounded company-card-document-block" @if($user->payer_type !== 'company') style="display:none;" @endif>
+                            <h5>Карточка компании</h5>
+
+                            @if($user->hasCompanyCard())
+                                <div class="document-item border p-2 mb-2 rounded border-success bg-light">
+                                    <div class="row align-items-center">
+                                        <div class="col-12 col-sm-auto text-center text-sm-start mb-2 mb-sm-0">
+                                            <span class="fas fa-file-pdf fa-2x text-danger"></span>
+                                        </div>
+
+                                        <div class="col-12 col-sm mb-2 mb-sm-0 text-center text-sm-start">
+                                            <div class="fw-bold text-truncate" style="max-width: 200px;" title="{{ $user->company_card_name }}">
+                                                {{ $user->company_card_name }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-sm-auto text-center">
+                                            <div class="btn-group btn-group-sm w-100 d-flex flex-wrap flex-sm-nowrap" role="group">
+                                                <a href="{{ $user->companyCardUrl() }}"
+                                                   class="btn btn-outline-primary d-flex align-items-center justify-content-center flex-fill flex-sm-grow-0" target="_blank">
+                                                    <span class="d-none d-sm-inline">Скачать</span>
+                                                    <span class="d-sm-none fas fa-download"></span>
+                                                </a>
+                                                <button type="button"
+                                                        data-url="{{ route('users.company-card.delete', $user->id) }}"
+                                                        data-token="{{ csrf_token() }}"
+                                                        class="btn btn-outline-danger d-flex align-items-center justify-content-center btn-delete-company-card"
+                                                        onclick="return confirm('Удалить карточку компании?')">
+                                                    <span class="d-none d-sm-inline">Удалить</span>
+                                                    <span class="d-sm-none fas fa-trash"></span>
+                                                </button>
+                                            </div>
+
+                                            <div class="mt-1">
+                                                <small class="text-success">
+                                                    <span class="fas fa-check-circle"></span> Загружен
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <form action="{{ route('users.company-card.upload', $user->id) }}" method="POST"
+                                  enctype="multipart/form-data" class="upload-form mt-2">
+                                @csrf
+                                <div class="row g-2">
+                                    <div class="col-12 col-sm">
+                                        <input type="file" name="company_card" class="form-control"
+                                               accept=".pdf" {{ $user->hasCompanyCard() ? '' : 'required' }}>
+                                    </div>
+                                    <div class="col-12 col-sm-auto">
+                                        <button type="submit" class="btn btn-primary w-100">Загрузить</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
                         @foreach($documentTypes as $docType)
                             <div class="document-type-block mb-4 p-3 border rounded">
                                 <h5>{{ $docType['title'] }}</h5>
