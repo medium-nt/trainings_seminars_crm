@@ -190,6 +190,9 @@ class UsersController
             $request->input('password')
         );
 
+        // Устанавливаем значение по умолчанию для payer_type
+        $data['payer_type'] ??= 'self';
+
         $user = User::create($data);
 
         return redirect()

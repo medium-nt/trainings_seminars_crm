@@ -52,8 +52,8 @@ class UserFormRequest extends FormRequest
             unset($rules['role_id']);
         } else {
             $rules['password'] = 'required|confirmed|string|min:6';
-            // При создании нового пользователя payer_type обязателен
-            $rules['payer_type'] = 'required|in:self,company';
+            // При создании payer_type не обязателен — установится в self по умолчанию
+            $rules['payer_type'] = 'nullable|in:self,company';
         }
 
         return $rules;
