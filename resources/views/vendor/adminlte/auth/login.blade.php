@@ -46,12 +46,12 @@
 
         {{-- Password field --}}
         <div class="input-group mb-3">
-            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
+            <input type="password" name="password" id="password-input" class="form-control @error('password') is-invalid @enderror"
                 placeholder="{{ __('adminlte::adminlte.password') }}">
 
             <div class="input-group-append">
-                <div class="input-group-text">
-                    <span class="fas fa-lock {{ config('adminlte.classes_auth_icon', '') }}"></span>
+                <div class="input-group-text" style="cursor: pointer;" onclick="togglePasswordVisibility()">
+                    <span id="password-toggle-icon" class="fas fa-eye {{ config('adminlte.classes_auth_icon', '') }}"></span>
                 </div>
             </div>
 
@@ -61,6 +61,23 @@
                 </span>
             @enderror
         </div>
+
+        <script>
+            function togglePasswordVisibility() {
+                const passwordInput = document.getElementById('password-input');
+                const toggleIcon = document.getElementById('password-toggle-icon');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
+                }
+            }
+        </script>
 
         {{-- Login field --}}
         <div class="row">
