@@ -200,7 +200,7 @@ class UsersController
     {
         $search = request('search') ?? '';
         $groupId = request('group_id');
-        $users = User::searchClients($search, $groupId)->paginate(5);
+        $users = User::searchClients($search, $groupId)->paginate(20);
 
         return view('users.clients', [
             'title' => 'Клиенты',
@@ -214,7 +214,7 @@ class UsersController
         return view('users.employees', [
             'title' => 'Сотрудники',
             'users' => User::where('role_id', '!=', 1)
-                ->paginate(5),
+                ->paginate(20),
             'groups' => Group::all(),
         ]);
     }
