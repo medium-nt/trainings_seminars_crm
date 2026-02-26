@@ -15,6 +15,7 @@ class StatisticsController extends Controller
         'snils' => 'СНИЛС',
         'diploma_basis' => 'Диплом основание',
         'name_change_document' => 'Смена фамилии',
+        'act' => 'Акт',
     ];
 
     public function documents(Request $request)

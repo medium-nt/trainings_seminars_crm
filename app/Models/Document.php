@@ -43,6 +43,7 @@ class Document extends Model
             'contract' => 'Договор',
             'personal_data_consent' => 'Согласие на обработку ПД',
             'name_change_document' => 'Документ о смене фамилии',
+            'act' => 'Акт',
             default => 'Другой',
         };
     }

@@ -23,6 +23,7 @@ class UsersController
             ['type' => 'snils', 'title' => 'СНИЛС'],
             ['type' => 'diploma_basis', 'title' => 'Документ-основание для диплома'],
             ['type' => 'name_change_document', 'title' => 'Документ о смене фамилии'],
+            ['type' => 'act', 'title' => 'Акт'],
         ];
 
         $groups = auth()->user()->studentGroupsWithPayments->map(function ($group) {
@@ -253,6 +254,7 @@ class UsersController
             ['type' => 'snils', 'title' => 'СНИЛС'],
             ['type' => 'diploma_basis', 'title' => 'Документ-основание для диплома'],
             ['type' => 'name_change_document', 'title' => 'Документ о смене фамилии'],
+            ['type' => 'act', 'title' => 'Акт'],
         ];
 
         return view('users.edit', [
