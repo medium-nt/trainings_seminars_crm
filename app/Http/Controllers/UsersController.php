@@ -312,6 +312,15 @@ class UsersController
             ->with('success', $user->is_blocked ? 'Пользователь заблокирован' : 'Пользователь разблокирован');
     }
 
+    public function verifyEmail(User $user)
+    {
+        $user->email_verified_at = now();
+        $user->save();
+
+        return back()
+            ->with('success', 'Email пользователя успешно подтверждён.');
+    }
+
     public function search(Request $request)
     {
         $search = $request->get('search', '');

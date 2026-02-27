@@ -41,8 +41,20 @@
                             <input type="text" name="patronymic" class="form-control" placeholder="Отчество" value="{{ $user->patronymic }}">
                         </div>
                         <div class="form-group">
-                            <label for="email">Почта</label>
+                            <label for="email">
+                                Почта
+                            </label>
                             <input type="email" name="email" class="form-control" placeholder="Почта" value="{{ $user->email }}" required>
+                            @if(!$user->hasVerifiedEmail())
+                                <small class="text-warning">Email не подтверждён</small>
+                                <a href="{{ route('users.verifyEmail', $user->id) }}"
+                                   class="btn btn-link btn-sm float-right"
+                                   onclick="return confirm('Вы уверены, что хотите подтвердить email пользователя?')">
+                                    Подтвердить email
+                                </a>
+                            @else
+                                <small class="text-success">Email подтверждён: {{ $user->email_verified_at?->format('d.m.Y H:i') }}</small>
+                            @endif
                         </div>
                         <div class="form-group">
                             <label for="phone">Телефон</label>

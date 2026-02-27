@@ -21,6 +21,8 @@ Route::middleware(['blocked'])->prefix('/users')->group(function () {
         ->name('users.destroy');
     Route::post('/{user}/toggle-block', [UsersController::class, 'toggleBlock'])
         ->name('users.toggleBlock');
+    Route::get('/{user}/verify-email', [UsersController::class, 'verifyEmail'])
+        ->name('users.verifyEmail');
 
     Route::post('/{user}/company-card', [UsersController::class, 'uploadCompanyCardForUser'])
         ->name('users.company-card.upload');
