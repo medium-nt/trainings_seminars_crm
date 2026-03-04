@@ -152,15 +152,16 @@
             </form>
         </div>
 
-        <!-- Блок документов (только для клиентов) -->
-        @if($user->isClient())
+        <!-- Блок документов (для клиентов и преподавателей) -->
+        @if($user->isClient() || $user->isTeacher())
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Документы пользователя: {{ $user->full_name }}</h3>
                     </div>
                     <div class="card-body">
-                        <!-- Карточка компании -->
+                        <!-- Карточка компании (только для клиентов) -->
+                        @if($user->isClient())
                         <div class="document-type-block mb-4 p-3 border rounded company-card-document-block" @if($user->payer_type !== 'company') style="display:none;" @endif>
                             <h5>Карточка компании</h5>
 
@@ -218,6 +219,7 @@
                                 </div>
                             </form>
                         </div>
+                        @endif
 
                         @foreach($documentTypes as $docType)
                             <div class="document-type-block mb-4 p-3 border rounded">

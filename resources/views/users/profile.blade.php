@@ -151,8 +151,8 @@
             </form>
         </div>
 
-        <!-- Блок документов (только для клиентов) -->
-        @if(auth()->user()->isClient())
+        <!-- Блок документов (для клиентов и преподавателей) -->
+        @if(auth()->user()->isClient() || auth()->user()->isTeacher())
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
