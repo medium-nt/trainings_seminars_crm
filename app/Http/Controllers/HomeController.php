@@ -35,7 +35,7 @@ class HomeController extends Controller
             'title' => 'Главная страница',
             'selectedYear' => $selectedYear,
             'selectedMonth' => $selectedMonth,
-            'years' => range(2020, now()->year),
+            'years' => range(2026, now()->year),
             'months' => [
                 1 => 'Январь', 2 => 'Февраль', 3 => 'Март', 4 => 'Апрель',
                 5 => 'Май', 6 => 'Июнь', 7 => 'Июль', 8 => 'Август',

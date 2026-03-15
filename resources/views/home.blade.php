@@ -73,7 +73,12 @@
                             @if($stats->count() > 0)
                                 @foreach($stats as $row)
                                     <tr>
-                                        <td>{{ $row['title'] }}</td>
+                                        <td>
+                                            <a href="{{ route('groups.show', $row['id']) }}"
+                                               class="text-decoration-none">
+                                                {{ $row['title'] }}
+                                            </a>
+                                        </td>
                                         <td>{{ $row['comment'] }}</td>
                                         <td class="text-end">{{ number_format($row['contracts'], 2, '.', ' ') }} ₽</td>
                                         <td class="text-end">{{ number_format($row['paid'], 2, '.', ' ') }} ₽</td>

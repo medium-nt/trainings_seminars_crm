@@ -9,7 +9,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
-                <a href="{{ route('groups.index') }}" class="btn btn-secondary mb-3">Назад</a>
+                <a href="{{ url()->previous() }}" class="btn btn-secondary mb-3">Назад</a>
                 @if(auth()->user()->isAdmin())
                 <a href="{{ route('groups.edit', $group->id) }}" class="btn btn-primary mb-3">Редактировать</a>
                 @endif
