@@ -32,6 +32,7 @@
                         <thead>
                             <tr>
                                 <th>Группа</th>
+                                <th>Комментарий</th>
                                 <th class="text-end">Оплачено</th>
                                 <th class="text-end">Долг</th>
                             </tr>
@@ -41,6 +42,7 @@
                                 @foreach($stats as $row)
                                     <tr>
                                         <td>{{ $row['title'] }}</td>
+                                        <td>{{ $row['comment'] }}</td>
                                         <td class="text-end">{{ number_format($row['paid'], 2, '.', ' ') }} ₽</td>
                                         <td class="text-end {{ $row['debt'] > 0 ? 'text-danger' : 'text-success' }}">
                                             {{ number_format($row['debt'], 2, '.', ' ') }} ₽

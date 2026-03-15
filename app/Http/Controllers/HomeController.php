@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class HomeController extends Controller
 {
@@ -16,12 +18,7 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function index()
+    public function index(): RedirectResponse|View
     {
         // Клиентов перенаправляем на профиль
         if (auth()->user()->isClient()) {
@@ -36,6 +33,7 @@ class HomeController extends Controller
         // Для админа добавляем статистику по группам
         if (auth()->user()->isAdmin()) {
             $stats = $this->getDashboardStats();
+
             $data['stats'] = $stats['groups'];
             $data['totalPaid'] = $stats['totalPaid'];
             $data['totalDebt'] = $stats['totalDebt'];
@@ -50,20 +48,20 @@ class HomeController extends Controller
     private function getDashboardStats(): array
     {
         $currentYearStart = now()->startOfYear();
-        $currentYearEnd = now()->endOfDay();
+        $currentDay = now()->endOfDay();
 
         // Только группы текущего года
         $groups = Group::with(['clients', 'payments'])
             ->whereYear('start_date', now()->year)
             ->get();
 
-        $stats = $groups->map(function (Group $group) use ($currentYearStart, $currentYearEnd) {
+        $stats = $groups->map(function (Group $group) use ($currentYearStart, $currentDay) {
             // Общая стоимость всех клиентов в группе
             $totalCost = $group->clients->sum('pivot.price');
 
             // Сумма платежей за текущий год
             $totalPaid = $group->payments()
-                ->whereBetween('payment_date', [$currentYearStart, $currentYearEnd])
+                ->whereBetween('payment_date', [$currentYearStart, $currentDay])
                 ->sum('amount');
 
             // Долг = стоимость - оплачено
@@ -72,6 +70,7 @@ class HomeController extends Controller
             return [
                 'id' => $group->id,
                 'title' => $group->title,
+                'comment' => $group->note,
                 'paid' => $totalPaid,
                 'debt' => $debt,
             ];
