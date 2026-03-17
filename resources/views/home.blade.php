@@ -7,7 +7,7 @@
 
 @section('content')
     <!-- Фильтры -->
-    @if(auth()->user()->isAdmin() && isset($stats))
+    @if(auth()->user()->isAdmin() && (isset($stats) || isset($statsByMonth)))
         <div class="card mb-3">
             <div class="card-body">
                 <div class="row g-3">
@@ -38,7 +38,7 @@
         </div>
     @endif
 
-    @if(auth()->user()->isAdmin() && isset($stats))
+    @if(auth()->user()->isAdmin() && (isset($stats) || isset($statsByMonth)))
         <!-- Дашборд админа -->
         <div class="card">
             <div class="card-body">
@@ -46,57 +46,98 @@
                 <h5 class="card-title mb-3">Финансовая статистика по группам</h5>
 
                 <!-- ИТОГО сверху -->
-                <table class="table table-bordered mb-3">
+                <table class="table table-bordered mb-3" style="table-layout: fixed;">
                     <tbody>
                         <tr class="fw-bold">
-                            <td>ИТОГО</td>
-                            <td class="text-end">По договорам: <b>{{ number_format($totalContracts, 2, '.', ' ') }} ₽</b></td>
-                            <td class="text-end">Оплачено: <b>{{ number_format($totalPaid, 2, '.', ' ') }} ₽</b></td>
-                            <td class="text-end">Долг: <b>{{ number_format($totalDebt, 2, '.', ' ') }} ₽</b></td>
+                            <td style="width: 55%;">ИТОГО</td>
+                            <td style="width: 15%;" class="text-end">По договорам: <b>{{ number_format($totalContracts, 2, '.', ' ') }} ₽</b></td>
+                            <td style="width: 15%;" class="text-end">Оплачено: <b>{{ number_format($totalPaid, 2, '.', ' ') }} ₽</b></td>
+                            <td style="width: 15%;" class="text-end">Долг: <b>{{ number_format($totalDebt, 2, '.', ' ') }} ₽</b></td>
                         </tr>
                     </tbody>
                 </table>
 
-                <!-- Таблица групп -->
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped mb-0">
-                        <thead>
-                            <tr>
-                                <th>Группа</th>
-                                <th>Комментарий</th>
-                                <th class="text-end">По договорам</th>
-                                <th class="text-end">Оплачено</th>
-                                <th class="text-end">Долг</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if($stats->count() > 0)
-                                @foreach($stats as $row)
+                @if(isset($statsByMonth))
+                    <!-- Режим: 12 месяцев -->
+                    @foreach($statsByMonth as $monthNum => $monthData)
+                        @if($monthData['groups']->count() > 0)
+                            <div class="mb-4">
+                                <h6 class="mb-2">{{ $months[$monthNum] }} {{ $selectedYear }}</h6>
+
+                                <table class="table table-bordered table-striped mb-0" style="table-layout: fixed;">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 25%;">Группа</th>
+                                            <th style="width: 30%;">Комментарий</th>
+                                            <th style="width: 15%;" class="text-end">По договорам</th>
+                                            <th style="width: 15%;" class="text-end">Оплачено</th>
+                                            <th style="width: 15%;" class="text-end">Долг</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($monthData['groups'] as $row)
+                                            <tr>
+                                                <td>
+                                                    <a href="{{ route('groups.show', $row['id']) }}"
+                                                       class="text-decoration-none">
+                                                        {{ $row['title'] }}
+                                                    </a>
+                                                </td>
+                                                <td>{{ $row['comment'] }}</td>
+                                                <td class="text-end">{{ number_format($row['contracts'], 2, '.', ' ') }} ₽</td>
+                                                <td class="text-end">{{ number_format($row['paid'], 2, '.', ' ') }} ₽</td>
+                                                <td class="text-end {{ $row['debt'] > 0 ? 'text-danger' : 'text-success' }}">
+                                                    {{ number_format($row['debt'], 2, '.', ' ') }} ₽
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                    @endforeach
+                @else
+                    <!-- Режим: один месяц -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped mb-0" style="table-layout: fixed;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">Группа</th>
+                                    <th style="width: 30%;">Комментарий</th>
+                                    <th style="width: 15%;" class="text-end">По договорам</th>
+                                    <th style="width: 15%;" class="text-end">Оплачено</th>
+                                    <th style="width: 15%;" class="text-end">Долг</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if($stats->count() > 0)
+                                    @foreach($stats as $row)
+                                        <tr>
+                                            <td>
+                                                <a href="{{ route('groups.show', $row['id']) }}"
+                                                   class="text-decoration-none">
+                                                    {{ $row['title'] }}
+                                                </a>
+                                            </td>
+                                            <td>{{ $row['comment'] }}</td>
+                                            <td class="text-end">{{ number_format($row['contracts'], 2, '.', ' ') }} ₽</td>
+                                            <td class="text-end">{{ number_format($row['paid'], 2, '.', ' ') }} ₽</td>
+                                            <td class="text-end {{ $row['debt'] > 0 ? 'text-danger' : 'text-success' }}">
+                                                {{ number_format($row['debt'], 2, '.', ' ') }} ₽
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
                                     <tr>
-                                        <td>
-                                            <a href="{{ route('groups.show', $row['id']) }}"
-                                               class="text-decoration-none">
-                                                {{ $row['title'] }}
-                                            </a>
-                                        </td>
-                                        <td>{{ $row['comment'] }}</td>
-                                        <td class="text-end">{{ number_format($row['contracts'], 2, '.', ' ') }} ₽</td>
-                                        <td class="text-end">{{ number_format($row['paid'], 2, '.', ' ') }} ₽</td>
-                                        <td class="text-end {{ $row['debt'] > 0 ? 'text-danger' : 'text-success' }}">
-                                            {{ number_format($row['debt'], 2, '.', ' ') }} ₽
+                                        <td colspan="5" class="text-center text-muted py-3">
+                                            Нет групп
                                         </td>
                                     </tr>
-                                @endforeach
-                            @else
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted py-3">
-                                        Нет групп
-                                    </td>
-                                </tr>
-                            @endif
-                        </tbody>
-                    </table>
-                </div>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </div>
         </div>
     @else

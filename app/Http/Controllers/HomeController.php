@@ -27,7 +27,7 @@ class HomeController extends Controller
         }
 
         // Получить year и month из request или использовать текущие
-        $selectedYear = $request->get('year') ?? now()->year;
+        $selectedYear = (int) ($request->get('year') ?? now()->year);
         $selectedMonth = $request->get('month') ?? now()->month;
 
         $data = [
@@ -37,6 +37,7 @@ class HomeController extends Controller
             'selectedMonth' => $selectedMonth,
             'years' => range(2026, now()->year),
             'months' => [
+                'all_months' => '12 месяцев',
                 1 => 'Январь', 2 => 'Февраль', 3 => 'Март', 4 => 'Апрель',
                 5 => 'Май', 6 => 'Июнь', 7 => 'Июль', 8 => 'Август',
                 9 => 'Сентябрь', 10 => 'Октябрь', 11 => 'Ноябрь', 12 => 'Декабрь',
@@ -47,7 +48,11 @@ class HomeController extends Controller
         if (auth()->user()->isAdmin()) {
             $stats = $this->getDashboardStats($selectedYear, $selectedMonth);
 
-            $data['stats'] = $stats['groups'];
+            if ($selectedMonth === 'all_months') {
+                $data['statsByMonth'] = $stats['byMonth'];
+            } else {
+                $data['stats'] = $stats['groups'];
+            }
             $data['totalContracts'] = $stats['totalContracts'];
             $data['totalPaid'] = $stats['totalPaid'];
             $data['totalDebt'] = $stats['totalDebt'];
@@ -60,38 +65,98 @@ class HomeController extends Controller
      * Получить статистику по группам для дашборда.
      *
      * @param  int  $year  Год для фильтрации групп
-     * @param  int  $month  Месяц для фильтрации групп
+     * @param  int|string  $month  Месяц для фильтрации или 'all_months' для всех месяцев
      */
-    private function getDashboardStats(int $year, int $month): array
+    private function getDashboardStats(int $year, int|string $month): array
     {
-        // Начало и конец выбранного месяца
-        $periodStart = now()->setYear($year)->setMonth($month)->startOfMonth();
-        $periodEnd = now()->setYear($year)->setMonth($month)->endOfMonth();
+        // Режим "12 месяцев"
+        if ($month === 'all_months') {
+            return $this->getStatsForAllMonths($year);
+        }
 
+        // Режим одного месяца
+        return $this->getStatsForSingleMonth($year, (int) $month);
+    }
+
+    /**
+     * Получить статистику за все месяцы года.
+     */
+    private function getStatsForAllMonths(int $year): array
+    {
+        $allGroups = Group::with(['clients', 'payments'])
+            ->whereYear('start_date', $year)
+            ->get();
+
+        $byMonth = [];
+        $totalContracts = 0;
+        $totalPaid = 0;
+        $totalDebt = 0;
+
+        for ($m = 1; $m <= 12; $m++) {
+            $groupsInMonth = $allGroups->filter(fn ($g) => $g->start_date->month == $m);
+
+            $stats = $groupsInMonth->map(function (Group $group) {
+                $totalCost = $group->clients->sum('pivot.price');
+                $paid = $group->payments()->sum('amount');
+                $debt = max(0, $totalCost - $paid);
+
+                return [
+                    'id' => $group->id,
+                    'title' => $group->title,
+                    'comment' => $group->note,
+                    'contracts' => $totalCost,
+                    'paid' => $paid,
+                    'debt' => $debt,
+                ];
+            });
+
+            $byMonth[$m] = [
+                'groups' => $stats,
+                'contracts' => $stats->sum('contracts'),
+                'paid' => $stats->sum('paid'),
+                'debt' => $stats->sum('debt'),
+            ];
+
+            $totalContracts += $byMonth[$m]['contracts'];
+            $totalPaid += $byMonth[$m]['paid'];
+            $totalDebt += $byMonth[$m]['debt'];
+        }
+
+        return [
+            'byMonth' => $byMonth,
+            'totalContracts' => $totalContracts,
+            'totalPaid' => $totalPaid,
+            'totalDebt' => $totalDebt,
+        ];
+    }
+
+    /**
+     * Получить статистику за один месяц.
+     */
+    private function getStatsForSingleMonth(int $year, int $month): array
+    {
         // Группы, которые начались в выбранном году и месяце
         $groups = Group::with(['clients', 'payments'])
             ->whereYear('start_date', $year)
             ->whereMonth('start_date', $month)
             ->get();
 
-        $stats = $groups->map(function (Group $group) use ($periodStart, $periodEnd) {
+        $stats = $groups->map(function (Group $group) {
             // Общая стоимость всех клиентов в группе (по договорам)
             $totalCost = $group->clients->sum('pivot.price');
 
-            // Сумма платежей за выбранный период
-            $totalPaid = $group->payments()
-//                ->whereBetween('payment_date', [$periodStart, $periodEnd])
-                ->sum('amount');
+            // Сумма всех платежей
+            $paid = $group->payments()->sum('amount');
 
             // Долг = стоимость - оплачено
-            $debt = max(0, $totalCost - $totalPaid);
+            $debt = max(0, $totalCost - $paid);
 
             return [
                 'id' => $group->id,
                 'title' => $group->title,
                 'comment' => $group->note,
                 'contracts' => $totalCost,
-                'paid' => $totalPaid,
+                'paid' => $paid,
                 'debt' => $debt,
             ];
         });
