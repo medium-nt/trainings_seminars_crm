@@ -10,8 +10,6 @@ class StatisticsController extends Controller
     private const DOCUMENT_TYPES = [
         'contract' => 'Договор',
         'personal_data_consent' => 'Согласие ПД',
-        'passport_main' => 'Паспорт (осн)',
-        'passport_reg' => 'Паспорт (проп)',
         'snils' => 'СНИЛС',
         'diploma_basis' => 'Диплом основание',
         'name_change_document' => 'Смена фамилии',

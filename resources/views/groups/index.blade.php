@@ -57,9 +57,6 @@
                     </tbody>
                 </table>
 
-                <div class="d-flex justify-content-center mt-3">
-                    {{ $groups->links() }}
-                </div>
             </div>
         </div>
     </div>

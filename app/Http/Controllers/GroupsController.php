@@ -15,7 +15,7 @@ class GroupsController extends Controller
             'title' => 'Группы',
             'groups' => Group::query()
                 ->with('course', 'teacher')
-                ->paginate(5),
+                ->get(),
         ]);
     }
 
